@@ -46,7 +46,7 @@ export function SessionCompleteScreen({
   rounds,
   onHome,
 }: SessionCompleteScreenProps) {
-  const { openProfile } = usePlayNavigation();
+  const { openProfile, openCommunities } = usePlayNavigation();
   const { processChallengeReward } = useCircles();
   const { recordSession } = useReputation();
   const [reward, setReward] = useState<RewardEligibility | null>(null);
@@ -158,7 +158,14 @@ export function SessionCompleteScreen({
           Back to home
         </button>
         <button type="button" className="btn-secondary" onClick={openProfile}>
-          View profile
+          Profile
+        </button>
+        <button
+          type="button"
+          className="btn-secondary"
+          onClick={openCommunities}
+        >
+          Circles
         </button>
       </div>
     </section>

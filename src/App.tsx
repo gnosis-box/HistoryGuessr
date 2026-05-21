@@ -1,5 +1,5 @@
 // src/App.tsx
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   getChallengeById,
   pickCityChallenge,
@@ -19,18 +19,28 @@ import {
   type SessionRoundSummary,
 } from "@/components/SessionCompleteScreen";
 import { PlayerProfileScreen } from "@/components/profile/PlayerProfileScreen";
+import { CommunitiesScreen } from "@/components/communities/CommunitiesScreen";
 import { CityPicker } from "@/components/play/CityPicker";
+import { canAccessCommunity } from "@/lib/communities/access";
+import { getCommunity, getQuiz } from "@/lib/communities/storage";
+import { parseQuizShareParams } from "@/lib/communities/share";
 import { buildSessionQueue } from "@/lib/session/sessionQueue";
+import { useCircles } from "@/hooks/use-circles";
 import type { ChallengeType, GameChallenge } from "@/types/game";
 
 interface PlaySession {
-  kind: "mode" | "campaign" | "daily" | "pack";
+  kind: "mode" | "campaign" | "daily" | "pack" | "community";
   campaignId?: string;
   packId?: string;
   modeType?: ChallengeType;
+  communityId?: string;
+  quizId?: string;
+  quizTitle?: string;
+  communityName?: string;
 }
 
 export default function App() {
+  const { address } = useCircles();
   const [screen, setScreen] = useState<AppScreen>("home");
   const [activeGroupId, setActiveGroupId] = useState<string | null>(null);
   const [challenge, setChallenge] = useState<GameChallenge | null>(null);
@@ -40,6 +50,11 @@ export default function App() {
   const [sessionRounds, setSessionRounds] = useState<SessionRoundSummary[]>(
     [],
   );
+  const [shareError, setShareError] = useState<string | null>(null);
+  const [pendingShare, setPendingShare] = useState<{
+    communityId: string;
+    quizId: string;
+  } | null>(() => parseQuizShareParams(window.location.search));
 
   const goHome = useCallback(() => {
     setScreen("home");
@@ -49,6 +64,7 @@ export default function App() {
     setPlaySession(null);
     setChallengeQueue([]);
     setSessionRounds([]);
+    setShareError(null);
   }, []);
 
   const openCategory = useCallback((groupId: string) => {
@@ -62,18 +78,72 @@ export default function App() {
     setChallenge(null);
   }, []);
 
-  function startSession(
-    first: GameChallenge,
-    session: PlaySession,
-    queue: string[],
-  ) {
-    setChallengeQueue(queue);
-    setSessionRounds([]);
-    setChallenge(first);
-    setRoundInSession(1);
-    setPlaySession(session);
-    setScreen("play");
-  }
+  const openCommunities = useCallback(() => {
+    setScreen("communities");
+    setChallenge(null);
+    setShareError(null);
+  }, []);
+
+  const startSession = useCallback(
+    (first: GameChallenge, session: PlaySession, queue: string[]) => {
+      setChallengeQueue(queue);
+      setSessionRounds([]);
+      setChallenge(first);
+      setRoundInSession(1);
+      setPlaySession(session);
+      setScreen("play");
+    },
+    [],
+  );
+
+  const startCommunityQuiz = useCallback(
+    (communityId: string, quizId: string, viaShareLink = false) => {
+      const community = getCommunity(communityId);
+      const quiz = getQuiz(quizId);
+      if (!community || !quiz || quiz.communityId !== communityId) {
+        setShareError("This invite link is invalid or expired.");
+        setScreen("home");
+        return;
+      }
+
+      const access = canAccessCommunity(community, address, { viaShareLink });
+      if (!access.allowed) {
+        setShareError(access.reason);
+        setScreen("communities");
+        return;
+      }
+
+      const queue = quiz.challengeIds.filter((id) => getChallengeById(id));
+      if (queue.length === 0) {
+        setShareError("This quiz has no valid challenges.");
+        return;
+      }
+
+      const first = getChallengeById(queue[0]);
+      if (!first) return;
+
+      setShareError(null);
+      startSession(first, {
+        kind: "community",
+        communityId,
+        quizId,
+        quizTitle: quiz.title,
+        communityName: community.name,
+      }, queue);
+    },
+    [address, startSession],
+  );
+
+  useEffect(() => {
+    if (!pendingShare) return;
+    startCommunityQuiz(
+      pendingShare.communityId,
+      pendingShare.quizId,
+      true,
+    );
+    setPendingShare(null);
+    window.history.replaceState({}, "", window.location.pathname);
+  }, [pendingShare, startCommunityQuiz]);
 
   function startMode(type: ChallengeType) {
     const group = groupForMode(type);
@@ -160,6 +230,7 @@ export default function App() {
       activeMode,
       goHome,
       openProfile,
+      openCommunities,
       openCategory,
       startMode,
       startDaily,
@@ -171,6 +242,7 @@ export default function App() {
       activeMode,
       goHome,
       openProfile,
+      openCommunities,
       openCategory,
       challenge?.id,
     ],
@@ -179,17 +251,25 @@ export default function App() {
   const totalInSession = challengeQueue.length || 1;
 
   const sessionLabel =
-    playSession?.kind === "campaign"
-      ? getCampaign(playSession.campaignId!)?.title
-      : playSession?.kind === "daily"
-        ? "Daily"
-        : playSession?.kind === "pack"
-          ? getPack(playSession.packId!)?.name
-          : undefined;
+    playSession?.kind === "community"
+      ? `${playSession.communityName ?? "Circle"} · ${playSession.quizTitle ?? "Quiz"}`
+      : playSession?.kind === "campaign"
+        ? getCampaign(playSession.campaignId!)?.title
+        : playSession?.kind === "daily"
+          ? "Daily"
+          : playSession?.kind === "pack"
+            ? getPack(playSession.packId!)?.name
+            : undefined;
 
   return (
     <PlayNavigationProvider value={navValue}>
       <Layout>
+        {shareError && screen === "home" && (
+          <p className="mb-4 rounded-lg border border-[var(--danger)]/40 bg-[var(--danger)]/10 px-4 py-3 text-sm text-[var(--danger)]">
+            {shareError}
+          </p>
+        )}
+
         {screen === "home" && (
           <HomeScreen
             onStartCampaign={startCampaign}
@@ -198,6 +278,10 @@ export default function App() {
         )}
 
         {screen === "profile" && <PlayerProfileScreen />}
+
+        {screen === "communities" && (
+          <CommunitiesScreen onPlayQuiz={startCommunityQuiz} />
+        )}
 
         {screen === "category" && activeGroupId && (
           <ModeCategoryScreen

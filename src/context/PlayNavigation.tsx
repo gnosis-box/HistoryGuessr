@@ -7,7 +7,8 @@ export type AppScreen =
   | "city_pick"
   | "play"
   | "session_complete"
-  | "profile";
+  | "profile"
+  | "communities";
 
 interface PlayNavigationValue {
   screen: AppScreen;
@@ -15,6 +16,7 @@ interface PlayNavigationValue {
   activeMode: ChallengeType | null;
   goHome: () => void;
   openProfile: () => void;
+  openCommunities: () => void;
   openCategory: (groupId: string) => void;
   startMode: (type: ChallengeType) => void;
   startDaily: () => void;

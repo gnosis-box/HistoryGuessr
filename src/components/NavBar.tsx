@@ -7,6 +7,7 @@ export function NavBar() {
     activeGroupId,
     goHome,
     openProfile,
+    openCommunities,
     openCategory,
     startDaily,
     startRandom,
@@ -50,6 +51,17 @@ export function NavBar() {
               }`}
             >
               Profile
+            </button>
+            <button
+              type="button"
+              onClick={openCommunities}
+              className={`mr-1 shrink-0 rounded-full px-3 py-2 text-sm font-medium ${
+                screen === "communities"
+                  ? "bg-[var(--bg-card)] text-[var(--map-green)]"
+                  : "text-[var(--text-muted)] hover:text-[var(--text-primary)]"
+              }`}
+            >
+              Circles
             </button>
 
             {playModeGroups.map((group) => (

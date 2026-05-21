@@ -14,7 +14,8 @@ interface HomeScreenProps {
 }
 
 export function HomeScreen({ onStartCampaign, onPlayPack }: HomeScreenProps) {
-  const { startDaily, startRandom, openCategory } = usePlayNavigation();
+  const { startDaily, startRandom, openCategory, openCommunities } =
+    usePlayNavigation();
 
   return (
     <div className="space-y-12">
@@ -58,6 +59,13 @@ export function HomeScreen({ onStartCampaign, onPlayPack }: HomeScreenProps) {
           </button>
           <button type="button" className="btn-secondary" onClick={startDaily}>
             Today&apos;s daily
+          </button>
+          <button
+            type="button"
+            className="btn-secondary"
+            onClick={openCommunities}
+          >
+            Trusted circles
           </button>
           <a
             href={getCirclesPlaygroundUrl()}
