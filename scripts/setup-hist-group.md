@@ -12,40 +12,17 @@ History Guessr uses **group currency `HIST`**, not personal CRC, for quest rewar
 
 ## 1. Register the group (one-time)
 
-Use a **script with contract runner** (private key or Safe owner) — not from the miniapp iframe.
+From the repo (operator wallet on Gnosis, CRC for gas):
 
-```typescript
-import { Sdk } from "@aboutcircles/sdk";
-import { privateKeyToAccount } from "viem/accounts";
-import { createWalletClient, http } from "viem";
-import { gnosis } from "viem/chains";
-
-const account = privateKeyToAccount(process.env.OPERATOR_PRIVATE_KEY as `0x${string}`);
-const walletClient = createWalletClient({
-  account,
-  chain: gnosis,
-  transport: http(),
-});
-
-const sdk = new Sdk(undefined, walletClient);
-
-const group = await sdk.register.asGroup(
-  account.address,           // owner
-  account.address,           // service (can match owner for MVP)
-  account.address,           // feeCollection
-  [],                        // initialConditions
-  "History Guessr",          // name (≤19 chars)
-  "HIST",                    // symbol
-  {
-    name: "History Guessr",
-    description: "Group currency for cultural quests, sources, and curation.",
-  },
-);
-
-console.log("HIST group address:", group.address);
+```bash
+OPERATOR_PRIVATE_KEY=0xYOUR_KEY npm run hist:register-group
 ```
 
-Save the printed address → `VITE_HIST_GROUP_ADDRESS` in Coolify.
+The script prints `VITE_HIST_GROUP_ADDRESS=0x…` — add it to **Vercel** and redeploy.
+
+Optional for Garage demos without trust paths: `VITE_DEV_RELAX_TRUST=true`.
+
+See `scripts/register-hist-group.mjs` (not runnable inside the miniapp iframe).
 
 ## 2. Configure the deployed app
 

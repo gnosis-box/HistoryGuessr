@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useCircles } from "@/hooks/use-circles";
-import { historyGuessrGroup } from "@/lib/circles/config";
+import { devRelaxTrust, historyGuessrGroup } from "@/lib/circles/config";
 import { vouchCopy } from "@/lib/circles/vouching";
 import type { RewardEligibility } from "@/lib/circles/rewards";
 import { formatHist } from "@/utils/format";
@@ -49,15 +49,25 @@ export function RewardPanel({ eligibility }: RewardPanelProps) {
         </p>
       )}
 
-      <p className="mt-3 text-xs text-[var(--text-secondary)]">
-        {vouchCopy(vouchStatus)}
-      </p>
-
-      {trustGate && isConnected && (
-        <p className="mt-1 text-xs text-[var(--text-secondary)]/80">
-          Trust vs Gnosis Group: {(trustGate.relativeScore * 100).toFixed(1)}%
-          · {trustGate.targetsReached}/{trustGate.totalTargets} targets
+      {devRelaxTrust && (
+        <p className="mt-2 text-[10px] text-[var(--success)]">
+          Demo mode · trust checks relaxed
         </p>
+      )}
+
+      {!devRelaxTrust && (
+        <>
+          <p className="mt-3 text-xs text-[var(--text-secondary)]">
+            {vouchCopy(vouchStatus)}
+          </p>
+          {trustGate && isConnected && (
+            <p className="mt-1 text-xs text-[var(--text-secondary)]/80">
+              Trust vs Gnosis Group:{" "}
+              {(trustGate.relativeScore * 100).toFixed(1)}% ·{" "}
+              {trustGate.targetsReached}/{trustGate.totalTargets} targets
+            </p>
+          )}
+        </>
       )}
 
       <p className="mt-2 text-xs text-[var(--text-secondary)]">
@@ -75,10 +85,17 @@ export function RewardPanel({ eligibility }: RewardPanelProps) {
         </button>
       )}
 
-      {vouchStatus === "pending" && address && (
+      {!devRelaxTrust && vouchStatus === "pending" && address && (
         <p className="mt-2 text-xs text-sky-300/90">
-          Ask 2+ trusted members to vouch you into {historyGuessrGroup.name} —
-          lightweight identity, no KYC.
+          Ask 2+ trusted members to vouch you into {historyGuessrGroup.name}.
+        </p>
+      )}
+
+      {!historyGuessrGroup.groupAddress && (
+        <p className="mt-2 text-xs text-amber-400/90">
+          Run <code className="text-[var(--gold-soft)]">npm run hist:register-group</code>{" "}
+          and set <code className="text-[var(--gold-soft)]">VITE_HIST_GROUP_ADDRESS</code> on
+          Vercel.
         </p>
       )}
 

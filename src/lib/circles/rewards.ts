@@ -1,5 +1,5 @@
 import type { ChallengeDifficulty, ChallengeType } from "@/types/game";
-import { historyGuessrGroup, rewardPolicy } from "./config";
+import { devRelaxTrust, historyGuessrGroup, rewardPolicy } from "./config";
 
 const LEDGER_KEY = "history-guessr-hist-ledger";
 const DAILY_KEY = "history-guessr-hist-daily";
@@ -125,6 +125,17 @@ export function evaluateReward(params: {
       amount,
       status: "pending_trust",
       reason: "Open in Circles host to link rewards to your wallet.",
+    };
+  }
+
+  if (devRelaxTrust) {
+    return {
+      canEarn: true,
+      amount,
+      status: "earn",
+      reason: historyGuessrGroup.groupAddress
+        ? `${historyGuessrGroup.symbol} credited (demo trust mode).`
+        : `Set VITE_HIST_GROUP_ADDRESS after running npm run hist:register-group.`,
     };
   }
 

@@ -9,7 +9,8 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "docker:build": "docker build -t history-guessr .",
-    "docker:run": "docker run --rm -p 8080:80 history-guessr"
+    "docker:run": "docker run --rm -p 8080:80 history-guessr",
+    "hist:register-group": "node scripts/register-hist-group.mjs"
   },
   "dependencies": {
     "@aboutcircles/miniapp-sdk": "^0.1.32",

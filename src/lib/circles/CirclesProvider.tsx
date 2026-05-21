@@ -26,7 +26,7 @@ import { getVouchStatus, type VouchStatus } from "./vouching";
 export type { VouchStatus };
 import { claimPendingHist } from "./payout";
 import { isHistGroupMember } from "./groups";
-import { historyGuessrGroup } from "./config";
+import { devRelaxTrust, historyGuessrGroup } from "./config";
 
 interface CirclesContextValue {
   address: string | null;
@@ -111,9 +111,12 @@ export function CirclesProvider({ children }: { children: ReactNode }) {
     if (address) await loadProfile(address);
   }, [address, loadProfile]);
 
-  const vouchStatus: VouchStatus = isHistMember
-    ? "member"
-    : getVouchStatus(address);
+  const vouchStatus: VouchStatus =
+    devRelaxTrust && address
+      ? "member"
+      : isHistMember
+        ? "member"
+        : getVouchStatus(address);
   const isGroupMember = isHistMember || vouchStatus === "member";
 
   const displayProfile = useMemo<CirclesProfile>(() => {

@@ -1,3 +1,7 @@
+/** Bypass trust gate (set VITE_DEV_RELAX_TRUST=true on Vercel for Garage demos). */
+export const devRelaxTrust =
+  import.meta.env.VITE_DEV_RELAX_TRUST === "true";
+
 /** History Guessr group currency — configure when the on-chain group exists. */
 export const historyGuessrGroup = {
   symbol: "HIST",

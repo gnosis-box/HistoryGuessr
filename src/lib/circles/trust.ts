@@ -1,4 +1,4 @@
-import { historyGuessrGroup } from "./config";
+import { devRelaxTrust, historyGuessrGroup } from "./config";
 
 export interface TrustGateResult {
   relativeScore: number;
@@ -12,6 +12,17 @@ export interface TrustGateResult {
 export async function fetchTrustGate(
   avatarAddress: string,
 ): Promise<TrustGateResult> {
+  if (devRelaxTrust) {
+    return {
+      relativeScore: 1,
+      targetsReached: 1,
+      totalTargets: 1,
+      penetrationRate: 1,
+      passesGate: true,
+      source: "fallback",
+    };
+  }
+
   const targets = [
     historyGuessrGroup.gnosisGroupAddress,
     ...(historyGuessrGroup.groupAddress

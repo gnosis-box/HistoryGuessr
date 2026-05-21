@@ -39,9 +39,13 @@ Catalog: `src/data/catalog.ts` (~25 challenges). Each mode card on the home page
 2. Open [Circles playground](https://circles.gnosis.io/playground?url=<your-https-url>)
 3. Header shows your Safe address, CRC balance, and trust count when connected
 
+### Deploy on Vercel (recommended)
+
+See **[DEPLOY_VERCEL.md](./DEPLOY_VERCEL.md)** — import the GitHub repo, deploy, then open the Circles playground with your `*.vercel.app` URL.
+
 ### Deploy on gnosis.box (Coolify)
 
-See **[DEPLOY.md](./DEPLOY.md)** — target `https://history-guessr.thp.gnosis.box`, org [gnosis-box](https://github.com/orgs/gnosis-box/).
+See **[DEPLOY.md](./DEPLOY.md)** — alternative for `*.thp.gnosis.box`.
 
 See `src/lib/circles/README.md` for listing in CirclesMiniapps and Garage registration.
 

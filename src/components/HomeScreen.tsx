@@ -6,9 +6,7 @@ import { HomePillars } from "./HomePillars";
 import { ReputationShowcase } from "./ReputationShowcase";
 import { usePlayNavigation } from "@/context/PlayNavigation";
 import { playModeGroups } from "@/data/playModes";
-
-const PLAYGROUND_URL =
-  "https://circles.gnosis.io/playground?url=https://history-guessr.thp.gnosis.box/";
+import { getCirclesPlaygroundUrl } from "@/utils/appUrl";
 
 interface HomeScreenProps {
   onStartCampaign: (campaignId: string) => void;
@@ -62,7 +60,7 @@ export function HomeScreen({ onStartCampaign, onPlayPack }: HomeScreenProps) {
             Today&apos;s daily
           </button>
           <a
-            href={PLAYGROUND_URL}
+            href={getCirclesPlaygroundUrl()}
             target="_blank"
             rel="noopener noreferrer"
             className="btn-secondary"

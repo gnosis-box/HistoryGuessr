@@ -1,4 +1,12 @@
-# Deploy History Guessr on gnosis.box (Coolify)
+# Deploy History Guessr
+
+**Vercel (recommended):** see **[DEPLOY_VERCEL.md](./DEPLOY_VERCEL.md)**.
+
+**Coolify / gnosis.box (below):** for `*.thp.gnosis.box` hosting.
+
+---
+
+# Deploy on gnosis.box (Coolify)
 
 Target URL example: **https://history-guessr.thp.gnosis.box**
 
