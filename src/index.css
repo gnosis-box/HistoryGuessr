@@ -1,0 +1,104 @@
+@import "tailwindcss";
+@import "maplibre-gl/dist/maplibre-gl.css";
+
+@theme inline {
+  --color-background: #0f172a;
+  --color-surface: #111827;
+  --color-surface-soft: #1f2937;
+  --color-text-primary: #f8fafc;
+  --color-text-secondary: #cbd5e1;
+  --color-accent: #d6a94f;
+  --color-accent-soft: #f1d28a;
+  --color-danger: #ef4444;
+  --color-success: #22c55e;
+  --font-display: "Cormorant Garamond", Georgia, serif;
+  --font-sans: "DM Sans", system-ui, sans-serif;
+}
+
+:root {
+  --background: #0f172a;
+  --surface: #111827;
+  --surface-soft: #1f2937;
+  --text-primary: #f8fafc;
+  --text-secondary: #cbd5e1;
+  --accent: #d6a94f;
+  --accent-soft: #f1d28a;
+  --danger: #ef4444;
+  --success: #22c55e;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  min-height: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-sans);
+  background: radial-gradient(ellipse at top, #1e293b 0%, var(--background) 55%);
+  color: var(--text-primary);
+  -webkit-font-smoothing: antialiased;
+}
+
+.font-display {
+  font-family: var(--font-display);
+}
+
+.glass-card {
+  background: color-mix(in srgb, var(--surface) 82%, transparent);
+  border: 1px solid color-mix(in srgb, var(--accent) 18%, transparent);
+  backdrop-filter: blur(12px);
+}
+
+.btn-primary {
+  @apply inline-flex items-center justify-center rounded-full px-6 py-3 text-sm font-semibold transition;
+  background: linear-gradient(135deg, var(--accent) 0%, #b8862e 100%);
+  color: #0f172a;
+}
+
+.btn-primary:hover:not(:disabled) {
+  filter: brightness(1.08);
+  transform: translateY(-1px);
+}
+
+.btn-primary:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.btn-secondary {
+  @apply inline-flex items-center justify-center rounded-full border px-5 py-2.5 text-sm font-medium transition;
+  border-color: color-mix(in srgb, var(--accent) 35%, transparent);
+  color: var(--accent-soft);
+  background: color-mix(in srgb, var(--surface-soft) 60%, transparent);
+}
+
+.btn-secondary:hover:not(:disabled) {
+  border-color: var(--accent);
+  background: color-mix(in srgb, var(--surface-soft) 90%, transparent);
+}
+
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-up {
+  animation: fade-up 0.45s ease-out forwards;
+}
+
+.maplibregl-ctrl-attrib {
+  font-size: 10px;
+  opacity: 0.7;
+}
