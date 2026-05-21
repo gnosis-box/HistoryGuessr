@@ -10,7 +10,7 @@ export function FutureCirclesPanel({ variant = "compact" }: FutureCirclesPanelPr
     "Challenge trusted friends from your trust graph",
     "Build cultural reputation (Archivist, Cartographer, Source Hunter…)",
     "Create local history Groups — e.g. Avignon, Paris, medieval Europe",
-    "Reward great quest creators with symbolic CRC",
+    "Reward contributors with HIST group currency",
     "Use Circles profiles as social identity in leaderboards",
   ];
 

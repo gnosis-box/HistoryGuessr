@@ -53,8 +53,8 @@ export function CirclesWalletBadge() {
                 {profile.crcBalance !== undefined
                   ? `${profile.crcBalance} CRC`
                   : "CRC —"}
-                {profile.trustConnections !== undefined &&
-                  ` · ${profile.trustConnections} trust`}
+                {profile.groupCurrencyBalance !== undefined &&
+                  ` · ${profile.groupCurrencyBalance} ${profile.groupCurrencySymbol ?? "HIST"}`}
               </p>
             </>
           ) : (

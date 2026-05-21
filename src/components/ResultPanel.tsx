@@ -1,6 +1,9 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type { GameChallenge } from "@/types/game";
+import { useCircles } from "@/hooks/use-circles";
+import type { RewardEligibility } from "@/lib/circles/rewards";
 import { shareResult } from "@/utils/share";
+import { RewardPanel } from "./RewardPanel";
 import { ScoreBadge } from "./ScoreBadge";
 
 interface ResultPanelProps {
@@ -22,9 +25,15 @@ export function ResultPanel({
   opponentScore,
   onNext,
 }: ResultPanelProps) {
+  const { processChallengeReward } = useCircles();
   const [shareStatus, setShareStatus] = useState<"idle" | "copied" | "error">(
     "idle",
   );
+  const [reward, setReward] = useState<RewardEligibility | null>(null);
+
+  useEffect(() => {
+    setReward(processChallengeReward(score, challenge));
+  }, [score, challenge, processChallengeReward]);
 
   const beatFriend =
     opponentScore !== undefined && score > opponentScore;
@@ -86,6 +95,8 @@ export function ResultPanel({
           </div>
         </div>
       </div>
+
+      {reward && <RewardPanel eligibility={reward} />}
 
       <div className="mt-6 flex flex-wrap gap-3">
         <button type="button" className="btn-primary" onClick={onNext}>

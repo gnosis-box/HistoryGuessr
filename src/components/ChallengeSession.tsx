@@ -28,7 +28,7 @@ import type {
 
 interface ChallengeSessionProps {
   challenge: GameChallenge;
-  challengeIndex: number;
+  challengeNumber: number;
   totalInMode: number;
   onHome: () => void;
   onNext: () => void;
@@ -36,7 +36,7 @@ interface ChallengeSessionProps {
 
 export function ChallengeSession({
   challenge,
-  challengeIndex,
+  challengeNumber,
   totalInMode,
   onHome,
   onNext,
@@ -281,7 +281,7 @@ export function ChallengeSession({
       <div className="space-y-6">
         <ChallengeCard
           challenge={challenge}
-          challengeNumber={challengeIndex + 1}
+          challengeNumber={challengeNumber}
           totalChallenges={totalInMode}
           modeName={modeName}
         />

@@ -16,10 +16,18 @@ type Screen = "home" | "city_pick" | "play";
 export default function App() {
   const [screen, setScreen] = useState<Screen>("home");
   const [challenge, setChallenge] = useState<GameChallenge | null>(null);
+  const [roundInSession, setRoundInSession] = useState(1);
 
   function goHome() {
     setScreen("home");
     setChallenge(null);
+    setRoundInSession(1);
+  }
+
+  function beginChallenge(next: GameChallenge) {
+    setChallenge(next);
+    setRoundInSession(1);
+    setScreen("play");
   }
 
   function startMode(type: ChallengeType) {
@@ -27,8 +35,7 @@ export default function App() {
       setScreen("city_pick");
       return;
     }
-    setChallenge(pickRandomChallenge(type));
-    setScreen("play");
+    beginChallenge(pickRandomChallenge(type));
   }
 
   function startPlaceGuess() {
@@ -36,21 +43,18 @@ export default function App() {
   }
 
   function startRandom() {
-    setChallenge(pickRandomChallenge());
-    setScreen("play");
+    beginChallenge(pickRandomChallenge());
   }
 
   function handleCitySelect(city: string) {
     const picked = pickCityChallenge(city);
-    if (picked) {
-      setChallenge(picked);
-      setScreen("play");
-    }
+    if (picked) beginChallenge(picked);
   }
 
   function handleNextChallenge() {
     if (!challenge) return;
     setChallenge(pickRandomChallenge(challenge.type, challenge.id));
+    setRoundInSession((r) => r + 1);
   }
 
   const poolSize = challenge
@@ -80,7 +84,7 @@ export default function App() {
         <ChallengeSession
           key={challenge.id}
           challenge={challenge}
-          challengeIndex={0}
+          challengeNumber={roundInSession}
           totalInMode={poolSize}
           onHome={goHome}
           onNext={handleNextChallenge}

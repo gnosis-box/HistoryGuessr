@@ -109,7 +109,15 @@ Optional: PR to [aboutcircles/CirclesMiniapps](https://github.com/aboutcircles/C
 
 ---
 
-## 5. Garage (Friday deadline)
+## 5. HIST group currency
+
+1. Create on-chain group: `scripts/setup-hist-group.md`
+2. Set `VITE_HIST_GROUP_ADDRESS` in Coolify env
+3. Resources index: `src/lib/circles/RESOURCES.md`
+
+Workshop PDF: https://garage.aboutcircles.com/circles-kickoff-workshop-may19.pdf
+
+## 6. Garage (Sunday snapshot)
 
 1. Profile: https://garage.aboutcircles.com/signup  
 2. Register app: https://garage.aboutcircles.com/register  

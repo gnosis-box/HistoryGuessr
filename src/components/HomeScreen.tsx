@@ -1,6 +1,7 @@
 import { ChallengeModesSection } from "./ChallengeModesSection";
 import { HowItWorksSection } from "./HowItWorksSection";
 import { FutureCirclesPanel } from "./FutureCirclesPanel";
+import { BuilderResourcesPanel } from "./BuilderResourcesPanel";
 import type { ChallengeType } from "@/types/game";
 
 interface HomeScreenProps {
@@ -41,6 +42,7 @@ export function HomeScreen({ onStart, onRandom, onPlayMode }: HomeScreenProps) {
       <HowItWorksSection />
       <ChallengeModesSection onPlayMode={onPlayMode} />
       <FutureCirclesPanel variant="full" />
+      <BuilderResourcesPanel />
     </div>
   );
 }
