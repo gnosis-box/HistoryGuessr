@@ -32,3 +32,31 @@ Guess where history happened.`;
     }
   }
 }
+
+export async function shareBeatChallenge(params: {
+  score: number;
+  title: string;
+  answerLabel: string;
+  playerName: string;
+}): Promise<void> {
+  const text = `${params.playerName} scored ${params.score}/1000 on History Guessr.
+
+Challenge: ${params.title}
+Beat them on the map — answer: ${params.answerLabel}
+
+Open History Guessr in Circles to duel.`;
+
+  try {
+    await navigator.clipboard.writeText(text);
+  } catch {
+    const textarea = document.createElement("textarea");
+    textarea.value = text;
+    textarea.setAttribute("readonly", "");
+    textarea.style.position = "fixed";
+    textarea.style.left = "-9999px";
+    document.body.appendChild(textarea);
+    textarea.select();
+    document.execCommand("copy");
+    document.body.removeChild(textarea);
+  }
+}

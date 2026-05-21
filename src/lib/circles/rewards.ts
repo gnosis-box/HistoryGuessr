@@ -36,6 +36,10 @@ const difficultyMultiplier: Record<ChallengeDifficulty, number> = {
   expert: 1.6,
 };
 
+function roundHist(n: number): number {
+  return Math.round(n * 10) / 10;
+}
+
 export function calculateHistReward(
   score: number,
   difficulty: ChallengeDifficulty,
@@ -156,9 +160,9 @@ export function recordReward(entry: Omit<RewardEntry, "id" | "at">): RewardLedge
     at: new Date().toISOString(),
   };
   ledger.entries.unshift(full);
-  ledger.totalEarned += full.amount;
-  if (full.status === "pending") ledger.pending += full.amount;
-  if (full.status === "claimed") ledger.claimed += full.amount;
+  ledger.totalEarned = roundHist(ledger.totalEarned + full.amount);
+  if (full.status === "pending") ledger.pending = roundHist(ledger.pending + full.amount);
+  if (full.status === "claimed") ledger.claimed = roundHist(ledger.claimed + full.amount);
   addDailyTotal(full.amount);
   saveLedger(ledger);
   return ledger;

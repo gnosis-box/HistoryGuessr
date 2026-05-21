@@ -1,8 +1,11 @@
 import type { GameChallenge } from "@/types/game";
-import { challengeModes } from "@/data/challengeModes";
+import { getPlayModeLabel } from "@/data/playModes";
+import { calculateHistReward } from "@/lib/circles/rewards";
+import { expertDifficultyStyle } from "@/utils/accentStyles";
+import { difficultyStyles } from "@/utils/labels";
+import { SourceVouchBadge } from "./SourceVouchBadge";
 
 type HistoricalChallenge = GameChallenge;
-import { difficultyStyles } from "@/utils/labels";
 
 interface ChallengeCardProps {
   challenge: HistoricalChallenge;
@@ -17,8 +20,8 @@ export function ChallengeCard({
   totalChallenges,
   modeName: modeNameProp,
 }: ChallengeCardProps) {
-  const modeMeta = challengeModes.find((m) => m.type === challenge.type);
-  const modeName = modeNameProp ?? modeMeta?.name ?? challenge.type;
+  const modeName = modeNameProp ?? getPlayModeLabel(challenge.type);
+  const maxHist = calculateHistReward(1000, challenge.difficulty);
 
   return (
     <article className="glass-card animate-fade-up rounded-2xl p-5 sm:p-6">
@@ -47,7 +50,7 @@ export function ChallengeCard({
       <div className="mt-5 flex flex-wrap gap-3 text-sm text-[var(--text-secondary)]">
         {challenge.period && (
           <span>
-            <span className="text-[var(--text-primary)]/70">Period:</span>{" "}
+            <span className="text-[var(--text-muted)]">Period:</span>{" "}
             {challenge.period}
           </span>
         )}
@@ -56,7 +59,19 @@ export function ChallengeCard({
         >
           {challenge.difficulty}
         </span>
+        {challenge.sourceConfidence && (
+          <span
+            className={`rounded-full border px-2.5 py-0.5 text-xs capitalize ${expertDifficultyStyle}`}
+          >
+            Source: {challenge.sourceConfidence}
+          </span>
+        )}
+        <span className="text-xs text-[var(--gold)]">
+          Reward estimate: up to {maxHist} HIST
+        </span>
       </div>
+
+      <SourceVouchBadge challenge={challenge} />
 
       <div className="mt-3 flex flex-wrap gap-2">
         {challenge.tags.map((tag) => (

@@ -1,18 +1,18 @@
 const steps = [
   {
-    title: "Pick a challenge type",
+    title: "Play a challenge",
     description:
-      "Eleven modes are playable: map, dates, timelines, figures, quotes, paths, images, battles, cities, sources, friends.",
+      "Daily archive, historical campaign, or any of eleven modes — map, memory, or critical thinking.",
   },
   {
-    title: "Read & respond",
+    title: "Learn from the result",
     description:
-      "Clues, images, quotes or claims — each mode asks a different kind of historical memory.",
+      "Distance on the map, timeline feedback, sources explained — even misses teach you something.",
   },
   {
-    title: "Score & share",
+    title: "Earn trust & glory",
     description:
-      "See how close you were, learn the story, copy your result — soon, challenge friends on Circles.",
+      "HIST from your circle, honorific badges you cannot buy, duels with people you actually trust.",
   },
 ];
 
@@ -21,10 +21,11 @@ export function HowItWorksSection() {
     <section className="space-y-5">
       <div>
         <h2 className="font-display text-2xl font-semibold text-[var(--text-primary)] sm:text-3xl">
-          How it works
+          The loop
         </h2>
         <p className="mt-2 text-sm text-[var(--text-secondary)]">
-          A modular platform — one grammar of historical challenges, many UIs.
+          Play → understand → earn → unlock → replay — with your trust circle,
+          not strangers.
         </p>
       </div>
 
@@ -32,12 +33,12 @@ export function HowItWorksSection() {
         {steps.map((step, index) => (
           <div
             key={step.title}
-            className="rounded-xl border border-white/5 bg-[var(--surface-soft)]/70 p-4"
+            className="rounded-xl border border-[var(--border-subtle)] bg-[var(--bg-card)]/70 p-4"
           >
-            <span className="font-display text-2xl text-[var(--accent)]/80">
+            <span className="font-display text-2xl text-[var(--gold)]/80">
               {index + 1}
             </span>
-            <h3 className="mt-2 font-display text-lg font-semibold text-[var(--accent-soft)]">
+            <h3 className="mt-2 font-display text-lg font-semibold text-[var(--gold-soft)]">
               {step.title}
             </h3>
             <p className="mt-1 text-sm text-[var(--text-secondary)]">

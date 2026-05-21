@@ -1,16 +1,11 @@
+import { getRoundHonorific } from "@/lib/reputation/engine";
+
 interface ScoreBadgeProps {
   score: number;
 }
 
-function getLabel(score: number): string {
-  if (score >= 900) return "Excellent";
-  if (score >= 700) return "Strong memory";
-  if (score >= 400) return "Close enough";
-  return "Lost in time";
-}
-
 export function ScoreBadge({ score }: ScoreBadgeProps) {
-  const label = getLabel(score);
+  const honorific = getRoundHonorific(score);
 
   return (
     <div className="inline-flex flex-col items-center gap-1">
@@ -22,7 +17,12 @@ export function ScoreBadge({ score }: ScoreBadgeProps) {
           {score}
         </div>
       </div>
-      <span className="text-sm font-medium text-[var(--accent)]">{label}</span>
+      <span className="max-w-[140px] text-center font-display text-sm font-semibold leading-tight text-[var(--accent-soft)]">
+        {honorific.headline}
+      </span>
+      <span className="max-w-[160px] text-center text-[10px] italic text-[var(--text-secondary)]">
+        {honorific.subtitle}
+      </span>
       <span className="text-xs text-[var(--text-secondary)]">/ 1000</span>
     </div>
   );

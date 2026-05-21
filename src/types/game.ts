@@ -124,16 +124,42 @@ export interface CityHistoryChallenge extends ChallengeBase {
   longitude: number;
 }
 
+/** Category of weak claim the player must identify */
+export type SourceClaimCategory =
+  | "myth"
+  | "propaganda"
+  | "misattribution"
+  | "anachronism"
+  | "simplification";
+
+export type SourceStatementVerdict =
+  | "correct"
+  | "misleading"
+  | "false"
+  | "legend"
+  | "myth"
+  | "propaganda"
+  | "misattribution"
+  | "anachronism"
+  | "simplification";
+
 export interface SourceStatement {
   id: string;
   text: string;
-  verdict: "correct" | "misleading" | "false" | "legend";
+  verdict: SourceStatementVerdict;
 }
+
+export type SourceVouchLevel =
+  | "verified"
+  | "debated"
+  | "legendary"
+  | "community_vouched";
 
 export interface SourceDetectiveChallenge extends ChallengeBase {
   type: "source_detective";
   statements: SourceStatement[];
-  targetVerdict: SourceStatement["verdict"];
+  targetVerdict: SourceStatementVerdict;
+  claimCategory: SourceClaimCategory;
 }
 
 export interface FriendChallenge extends ChallengeBase {

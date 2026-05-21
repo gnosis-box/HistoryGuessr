@@ -23,12 +23,16 @@ export function scoreTimelineOrder(
   return Math.round((1000 * correct) / correctOrder.length);
 }
 
-export function scoreWhoIsIt(cluesRevealed: number, totalClues: number): number {
-  const tiers = [1000, 700, 400, 250];
-  const index = Math.min(cluesRevealed, tiers.length - 1);
-  const base = tiers[index] ?? 150;
-  if (cluesRevealed >= totalClues) return Math.min(base, 200);
-  return base;
+export const WHO_IS_IT_CLUE_PENALTY = 300;
+
+export function projectedWhoIsItScore(cluesUsed: number): number {
+  return Math.max(150, 1000 - cluesUsed * WHO_IS_IT_CLUE_PENALTY);
+}
+
+export function scoreWhoIsIt(cluesUsed: number, totalClues: number): number {
+  const score = projectedWhoIsItScore(cluesUsed);
+  if (cluesUsed >= totalClues - 1) return Math.min(score, 200);
+  return score;
 }
 
 export function scoreMcq(correct: boolean): number {

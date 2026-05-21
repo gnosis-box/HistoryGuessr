@@ -60,6 +60,30 @@ git push -u origin main
 4. Repository: `gnosis-box/history-guessr`  
 5. Branch: `main`
 
+### Clé SSH Coolify → GitHub (repo privé ou clone SSH)
+
+Coolify affiche une clé publique `coolify-generated-ssh-key`. Tu dois l’ajouter **sur GitHub**, pas dans le code du projet.
+
+**Option A — Deploy key (recommandé, read-only)**
+
+1. GitHub → `gnosis-box/history-guessr` → **Settings** → **Deploy keys** → **Add deploy key**
+2. Title: `coolify-gnosis-box`
+3. Key: colle la clé publique entière (une ligne commençant par `ssh-rsa AAAA...`)
+4. Coche **Allow write access** seulement si Coolify doit pousser sur le repo (en général **non**)
+5. **Add key**
+
+Copie locale (non versionnée git) : `deploy/coolify-deploy-key.pub`
+
+**Option B — GitHub App Coolify**
+
+Dans Coolify : connecte le compte/org **gnosis-box** via l’intégration GitHub — pas besoin de deploy key manuelle.
+
+**Option C — Repo public**
+
+Si `history-guessr` est **public**, Coolify peut cloner en HTTPS sans deploy key.
+
+Dans Coolify → application → **Source** : vérifie que le statut Git est vert après ajout de la clé.
+
 ### Build settings (Dockerfile — recommended)
 
 | Setting | Value |

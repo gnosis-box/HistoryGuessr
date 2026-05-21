@@ -12,7 +12,6 @@ Curated links from Garage, workshops, and builder channels.
 | **Leaderboard** | https://garage.aboutcircles.com/leaderboard |
 | **Builder SKILL.md** | https://garage.aboutcircles.com/SKILL.md |
 | **Kickoff workshop PDF (May 19)** | https://garage.aboutcircles.com/circles-kickoff-workshop-may19.pdf |
-| **Workshop recording** | https://vimeo.com/1193867453 |
 | **Builders Telegram** | https://t.me/about_circles/499 |
 
 **Judging weights:** Circles primitives depth, non-crypto UX, referrals, weekly activity in Circles app.
@@ -37,14 +36,6 @@ Curated links from Garage, workshops, and builder channels.
 | **Search profiles** | https://aboutcircles.github.io/CirclesTools/rpcQueryView.html?method=circles_searchProfiles |
 | **Trust analytics API** | https://squid-app-3gxnl.ondigitalocean.app/aboutcircles-advanced-analytics2/docs#/Scoring |
 | **Gnosis Group (trust anchor)** | `0xc19bc204eb1c1d5b3fe500e5e5dfabab625f286c` |
-
-## Workshop / drive assets
-
-| Resource | URL |
-|----------|-----|
-| **Google Drive asset** | https://drive.google.com/file/d/1MwWsxJKfkPk_ppn6SNeoBSS97mT7KnCL/view |
-
-Download workshop PDF and drive files locally for offline reference.
 
 ## HIST group setup (on-chain)
 

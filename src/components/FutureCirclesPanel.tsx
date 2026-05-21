@@ -8,7 +8,7 @@ export function FutureCirclesPanel({ variant = "compact" }: FutureCirclesPanelPr
   const { isConnected, profile, isMiniappHost } = useCircles();
   const items = [
     "Challenge trusted friends from your trust graph",
-    "Build cultural reputation (Archivist, Cartographer, Source Hunter…)",
+    "Earn honorific badges — Archivist, Cartographer, Source Hunter (not for sale)",
     "Create local history Groups — e.g. Avignon, Paris, medieval Europe",
     "Reward contributors with HIST group currency",
     "Use Circles profiles as social identity in leaderboards",

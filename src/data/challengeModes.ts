@@ -27,7 +27,7 @@ export const challengeModes: ChallengeMode[] = [
   {
     type: "date_guess",
     name: "Date Guess",
-    tagline: "When did it happen?",
+    tagline: "Pin the year on the timeline",
     description:
       "Given an event, guess the year or pick a date on a timeline. Closer dates earn more points.",
     example:
@@ -60,7 +60,7 @@ export const challengeModes: ChallengeMode[] = [
   {
     type: "quote_guess",
     name: "Quote Guess",
-    tagline: "Who said it — and when?",
+    tagline: "Match quotations to their authors",
     description:
       "Match a quotation to its author, context, or era. Sources and certainty levels are shown.",
     example:

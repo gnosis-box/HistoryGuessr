@@ -1,15 +1,18 @@
 // src/components/ChallengeSession.tsx
 import { useCallback, useState } from "react";
-import { challengeModes } from "@/data/challengeModes";
+import { getPlayModeLabel } from "@/data/playModes";
 import { ChallengeCard } from "@/components/ChallengeCard";
 import { GameMap } from "@/components/GameMap";
-import { ResultPanel } from "@/components/ResultPanel";
-import { FutureCirclesPanel } from "@/components/FutureCirclesPanel";
+import { RoundResultPanel } from "@/components/RoundResultPanel";
+import type { SessionRoundSummary } from "@/components/SessionCompleteScreen";
 import { DateGuessPlay } from "@/components/play/DateGuessPlay";
 import { TimelineOrderPlay } from "@/components/play/TimelineOrderPlay";
 import { WhoIsItPlay } from "@/components/play/WhoIsItPlay";
 import { McqPlay } from "@/components/play/McqPlay";
 import { SourceDetectivePlay } from "@/components/play/SourceDetectivePlay";
+import { TimelineResultReview } from "@/components/play/TimelineResultReview";
+import { DateResultReview } from "@/components/play/DateResultReview";
+import type { SourceStatementVerdict } from "@/types/game";
 import { calculateScore, haversineDistanceKm, formatDistanceKm } from "@/utils/distance";
 import {
   matchWhoIsIt,
@@ -20,6 +23,7 @@ import {
   scoreWhoIsIt,
 } from "@/utils/scoring";
 import { useCircles } from "@/hooks/use-circles";
+import { isGeoChallenge } from "@/utils/friendChallenge";
 import type {
   GameChallenge,
   GuessCoordinates,
@@ -30,31 +34,47 @@ interface ChallengeSessionProps {
   challenge: GameChallenge;
   challengeNumber: number;
   totalInMode: number;
-  onHome: () => void;
-  onNext: () => void;
+  sessionLabel?: string;
+  onRoundComplete: (round: SessionRoundSummary) => void;
 }
 
 export function ChallengeSession({
   challenge,
   challengeNumber,
   totalInMode,
-  onHome,
-  onNext,
+  sessionLabel,
+  onRoundComplete,
 }: ChallengeSessionProps) {
   const [phase, setPhase] = useState<"playing" | "result">("playing");
   const [result, setResult] = useState<PlayResult | null>(null);
   const [guess, setGuess] = useState<GuessCoordinates | null>(null);
   const [pathPoints, setPathPoints] = useState<GuessCoordinates[]>([]);
   const [mcqId, setMcqId] = useState<string | null>(null);
+  const [timelineGuess, setTimelineGuess] = useState<string[] | null>(null);
+  const [dateGuessYear, setDateGuessYear] = useState<number | null>(null);
   const { profile, isConnected } = useCircles();
 
-  const modeName =
-    challengeModes.find((m) => m.type === challenge.type)?.name ?? challenge.type;
+  function sourceVerdictMatches(
+    picked: SourceStatementVerdict | undefined,
+    target: SourceStatementVerdict,
+  ): boolean {
+    if (!picked) return false;
+    if (picked === target) return true;
+    if (target === "myth" && picked === "legend") return true;
+    if (target === "simplification" && (picked === "misleading" || picked === "false"))
+      return true;
+    return false;
+  }
 
-  const finish = useCallback((playResult: PlayResult) => {
-    setResult(playResult);
-    setPhase("result");
-  }, []);
+  const modeName = getPlayModeLabel(challenge.type);
+
+  const finish = useCallback(
+    (playResult: PlayResult) => {
+      setResult(playResult);
+      setPhase("result");
+    },
+    [],
+  );
 
   function handlePlaceValidate() {
     if (!guess || !("latitude" in challenge && "longitude" in challenge)) return;
@@ -110,6 +130,7 @@ export function ChallengeSession({
             challenge={challenge}
             disabled={phase === "result"}
             onSubmit={(year) => {
+              setDateGuessYear(year);
               const diff = Math.abs(year - challenge.correctYear);
               finish({
                 score: scoreDateGuess(year, challenge.correctYear),
@@ -128,6 +149,7 @@ export function ChallengeSession({
             challenge={challenge}
             disabled={phase === "result"}
             onSubmit={(order) => {
+              setTimelineGuess(order);
               const score = scoreTimelineOrder(order, correctOrder);
               const correct = order.filter((id, i) => id === correctOrder[i]).length;
               finish({
@@ -251,7 +273,10 @@ export function ChallengeSession({
             disabled={phase === "result"}
             onSubmit={(id) => {
               const picked = challenge.statements.find((s) => s.id === id);
-              const ok = picked?.verdict === challenge.targetVerdict;
+              const ok = sourceVerdictMatches(
+                picked?.verdict,
+                challenge.targetVerdict,
+              );
               finish({
                 score: scoreMcq(ok),
                 summary: ok
@@ -267,18 +292,23 @@ export function ChallengeSession({
     }
   }
 
-  function handleNext() {
-    setPhase("playing");
-    setResult(null);
-    setGuess(null);
-    setPathPoints([]);
-    setMcqId(null);
-    onNext();
+  function handleContinue() {
+    if (!result) return;
+    onRoundComplete({
+      challenge,
+      score: result.score,
+      summary: result.summary,
+    });
   }
 
   return (
-    <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_260px]">
-      <div className="space-y-6">
+    <div className="space-y-6">
+      {sessionLabel && (
+          <p className="text-xs font-semibold uppercase tracking-wider text-[var(--gold)]">
+            {sessionLabel}
+            {` · ${challengeNumber} / ${totalInMode}`}
+          </p>
+        )}
         <ChallengeCard
           challenge={challenge}
           challengeNumber={challengeNumber}
@@ -287,29 +317,52 @@ export function ChallengeSession({
         />
         {phase === "playing" && renderPlay()}
         {phase === "result" && result && (
-          <ResultPanel
-            challenge={challenge}
-            score={result.score}
-            summary={result.summary}
-            modeName={modeName}
-            playerName={isConnected ? profile.name : undefined}
-            opponentScore={
-              challenge.type === "friend_challenge"
-                ? challenge.opponentScore
-                : undefined
-            }
-            onNext={handleNext}
-          />
+          <>
+            {challenge.type === "timeline_order" && timelineGuess && (
+              <TimelineResultReview
+                challenge={challenge}
+                guessOrder={timelineGuess}
+              />
+            )}
+            {challenge.type === "date_guess" && dateGuessYear !== null && (
+              <DateResultReview challenge={challenge} guessYear={dateGuessYear} />
+            )}
+            {guess && isGeoChallenge(challenge) && (
+              <div className="space-y-2">
+                <p className="text-xs font-semibold uppercase tracking-wider text-[var(--text-muted)]">
+                  Your guess vs history
+                </p>
+                <GameMap
+                  key={`result-${challenge.id}`}
+                  answerLat={challenge.latitude}
+                  answerLng={challenge.longitude}
+                  guess={guess}
+                  showAnswer
+                  onGuess={() => {}}
+                  onValidate={() => {}}
+                  canValidate={false}
+                />
+              </div>
+            )}
+            <RoundResultPanel
+              challenge={challenge}
+              score={result.score}
+              summary={result.summary}
+              modeName={modeName}
+              playerName={
+                isConnected ? (profile.name ?? "You") : "Guest Historian"
+              }
+              opponentScore={
+                challenge.type === "friend_challenge"
+                  ? challenge.opponentScore
+                  : undefined
+              }
+              questionIndex={challengeNumber}
+              totalQuestions={totalInMode}
+              onContinue={handleContinue}
+            />
+          </>
         )}
-        {phase === "playing" && (
-          <button type="button" className="btn-secondary text-sm" onClick={onHome}>
-            ← Back to home
-          </button>
-        )}
-      </div>
-      <div className="hidden lg:block">
-        <FutureCirclesPanel />
-      </div>
     </div>
   );
 }

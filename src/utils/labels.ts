@@ -1,4 +1,5 @@
 import type { ChallengeDifficulty, ChallengeStatus } from "@/types/game";
+import { expertDifficultyStyle } from "@/utils/accentStyles";
 
 export const statusLabels: Record<ChallengeStatus, string> = {
   mvp: "MVP",
@@ -22,6 +23,5 @@ export const difficultyStyles: Record<ChallengeDifficulty, string> = {
   medium:
     "border-[var(--accent)]/30 bg-[var(--accent)]/10 text-[var(--accent-soft)]",
   hard: "border-[var(--danger)]/30 bg-[var(--danger)]/10 text-[var(--danger)]",
-  expert:
-    "border-purple-400/30 bg-purple-400/10 text-purple-300",
+  expert: expertDifficultyStyle,
 };

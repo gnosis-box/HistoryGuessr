@@ -3,6 +3,7 @@ import { useCircles } from "@/hooks/use-circles";
 import { historyGuessrGroup } from "@/lib/circles/config";
 import { vouchCopy } from "@/lib/circles/vouching";
 import type { RewardEligibility } from "@/lib/circles/rewards";
+import { formatHist } from "@/utils/format";
 
 interface RewardPanelProps {
   eligibility: RewardEligibility;
@@ -60,8 +61,8 @@ export function RewardPanel({ eligibility }: RewardPanelProps) {
       )}
 
       <p className="mt-2 text-xs text-[var(--text-secondary)]">
-        Balance: {ledger.pending + ledger.claimed} {historyGuessrGroup.symbol}{" "}
-        ({ledger.pending} pending · {ledger.claimed} claimed)
+        Balance: {formatHist(ledger.pending + ledger.claimed)}{" "}
+        {historyGuessrGroup.symbol} ({formatHist(ledger.pending)} pending)
       </p>
 
       {ledger.pending > 0 && isConnected && isMiniappHost && (

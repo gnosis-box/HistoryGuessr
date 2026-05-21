@@ -2,29 +2,51 @@
 @import "maplibre-gl/dist/maplibre-gl.css";
 
 @theme inline {
-  --color-background: #0f172a;
-  --color-surface: #111827;
-  --color-surface-soft: #1f2937;
-  --color-text-primary: #f8fafc;
-  --color-text-secondary: #cbd5e1;
-  --color-accent: #d6a94f;
-  --color-accent-soft: #f1d28a;
-  --color-danger: #ef4444;
-  --color-success: #22c55e;
+  --color-background: #0e1116;
+  --color-surface: #151922;
+  --color-surface-soft: #1b2030;
+  --color-text-primary: #f4ebdd;
+  --color-text-secondary: #afa89c;
+  --color-accent: #c9a45c;
+  --color-accent-soft: #e2c982;
+  --color-danger: #a85c4a;
+  --color-success: #6fa36f;
   --font-display: "Cormorant Garamond", Georgia, serif;
-  --font-sans: "DM Sans", system-ui, sans-serif;
+  --font-sans: "Inter", system-ui, sans-serif;
 }
 
 :root {
-  --background: #0f172a;
-  --surface: #111827;
-  --surface-soft: #1f2937;
-  --text-primary: #f8fafc;
-  --text-secondary: #cbd5e1;
-  --accent: #d6a94f;
-  --accent-soft: #f1d28a;
-  --danger: #ef4444;
-  --success: #22c55e;
+  --bg-main: #0e1116;
+  --bg-panel: #151922;
+  --bg-card: #1b2030;
+  --background: var(--bg-main);
+  --surface: var(--bg-panel);
+  --surface-soft: var(--bg-card);
+  --text-primary: #f4ebdd;
+  --text-secondary: #afa89c;
+  --text-muted: #8a8378;
+  --gold: #c9a45c;
+  --gold-soft: #e2c982;
+  --accent: var(--gold);
+  --accent-soft: var(--gold-soft);
+  --map-green: #3f6f5e;
+  --map-blue: #2f5d7c;
+  --danger: #a85c4a;
+  --danger-soft: #a85c4a;
+  --success: #6fa36f;
+  --success-soft: #6fa36f;
+  --border-subtle: rgba(244, 235, 221, 0.12);
+  /* Honor tier (legendary badges, reputation) — sage */
+  --honor: #8fb8a8;
+  --honor-soft: #b5d4c8;
+  --honor-ring: rgba(143, 184, 168, 0.38);
+  --honor-fill: rgba(63, 111, 94, 0.16);
+  --honor-glow: rgba(63, 111, 94, 0.22);
+  /* Expert / critical cards — archival steel */
+  --steel: #85b4cc;
+  --steel-soft: #a8c9db;
+  --steel-ring: rgba(122, 173, 196, 0.4);
+  --steel-fill: rgba(47, 93, 124, 0.15);
 }
 
 * {
@@ -40,7 +62,10 @@ body,
 body {
   margin: 0;
   font-family: var(--font-sans);
-  background: radial-gradient(ellipse at top, #1e293b 0%, var(--background) 55%);
+  background:
+    radial-gradient(ellipse 120% 80% at 50% -20%, rgba(63, 111, 94, 0.12) 0%, transparent 50%),
+    radial-gradient(ellipse 80% 50% at 100% 50%, rgba(201, 164, 92, 0.06) 0%, transparent 45%),
+    var(--bg-main);
   color: var(--text-primary);
   -webkit-font-smoothing: antialiased;
 }
@@ -50,19 +75,19 @@ body {
 }
 
 .glass-card {
-  background: color-mix(in srgb, var(--surface) 82%, transparent);
-  border: 1px solid color-mix(in srgb, var(--accent) 18%, transparent);
-  backdrop-filter: blur(12px);
+  background: color-mix(in srgb, var(--bg-panel) 88%, transparent);
+  border: 1px solid var(--border-subtle);
+  backdrop-filter: blur(14px);
 }
 
 .btn-primary {
   @apply inline-flex items-center justify-center rounded-full px-6 py-3 text-sm font-semibold transition;
-  background: linear-gradient(135deg, var(--accent) 0%, #b8862e 100%);
-  color: #0f172a;
+  background: linear-gradient(135deg, var(--gold-soft) 0%, var(--gold) 100%);
+  color: var(--bg-main);
 }
 
 .btn-primary:hover:not(:disabled) {
-  filter: brightness(1.08);
+  filter: brightness(1.06);
   transform: translateY(-1px);
 }
 
@@ -73,14 +98,14 @@ body {
 
 .btn-secondary {
   @apply inline-flex items-center justify-center rounded-full border px-5 py-2.5 text-sm font-medium transition;
-  border-color: color-mix(in srgb, var(--accent) 35%, transparent);
-  color: var(--accent-soft);
-  background: color-mix(in srgb, var(--surface-soft) 60%, transparent);
+  border-color: color-mix(in srgb, var(--gold) 40%, transparent);
+  color: var(--gold-soft);
+  background: color-mix(in srgb, var(--bg-card) 70%, transparent);
 }
 
 .btn-secondary:hover:not(:disabled) {
-  border-color: var(--accent);
-  background: color-mix(in srgb, var(--surface-soft) 90%, transparent);
+  border-color: var(--gold);
+  background: color-mix(in srgb, var(--bg-card) 95%, transparent);
 }
 
 @keyframes fade-up {
