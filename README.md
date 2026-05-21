@@ -7,8 +7,7 @@
 The first playable mode is **Place Guess**: read a clue, click the map, score by distance.
 
 The larger vision is a **modular platform for historical challenges** — locate events, order timelines, identify figures, reconstruct routes, detect false claims, or challenge someone from your trust graph.
-
-> **Talaria provides the historical memory.**  
+  
 > **Circles provides the social trust.**  
 > **History Guessr provides the game.**
 
