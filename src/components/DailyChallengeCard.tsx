@@ -15,8 +15,27 @@ export function DailyChallengeCard({ onPlayDaily }: DailyChallengeCardProps) {
           <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--gold)]">
             Daily archive
           </p>
-          <h2 className="mt-2 font-display text-3xl font-semibold text-[var(--text-primary)]">
-            #{archive}
+          <h2
+            className="mt-2 flex items-end gap-1.5 text-[var(--text-primary)]"
+            aria-label={`#${archive}`}
+          >
+            <span
+              className="font-display pb-0.5 text-2xl font-semibold leading-none text-[var(--gold-soft)]"
+              aria-hidden
+            >
+              #
+            </span>
+            <span className="flex items-end gap-px font-sans text-3xl font-semibold leading-none tabular-nums lining-nums">
+              {String(archive).split("").map((digit, index) => (
+                <span
+                  key={`${index}-${digit}`}
+                  className="inline-block min-w-[0.58em] text-center leading-none"
+                  aria-hidden
+                >
+                  {digit}
+                </span>
+              ))}
+            </span>
           </h2>
           <p className="mt-3 text-sm text-[var(--text-secondary)]">
             One challenge for everyone today · HIST capped · compare with your
