@@ -107,7 +107,9 @@ export function CommunitiesScreen({ onPlayQuiz }: CommunitiesScreenProps) {
                   <div className="mt-4 space-y-4 border-t border-[var(--border-subtle)] pt-4">
                     {creatingQuizFor === community.id ? (
                       <CreateQuizForm
+                        communityId={community.id}
                         communityName={community.name}
+                        founderAddress={founder}
                         onCreated={(input) => {
                           addQuiz({
                             communityId: community.id,
@@ -119,13 +121,22 @@ export function CommunitiesScreen({ onPlayQuiz }: CommunitiesScreenProps) {
                         onCancel={() => setCreatingQuizFor(null)}
                       />
                     ) : (
-                      <button
-                        type="button"
-                        className="btn-primary text-sm"
-                        onClick={() => setCreatingQuizFor(community.id)}
-                      >
-                        + Create quiz
-                      </button>
+                      <div className="flex flex-wrap gap-2">
+                        <button
+                          type="button"
+                          className="btn-primary text-sm"
+                          onClick={() => setCreatingQuizFor(community.id)}
+                        >
+                          + Create quiz
+                        </button>
+                      </div>
+                    )}
+
+                    {quizzes.length === 0 && creatingQuizFor !== community.id && (
+                      <p className="text-xs text-[var(--text-muted)]">
+                        Create challenges in the quiz builder, then publish a
+                        quiz for your circle.
+                      </p>
                     )}
 
                     {quizzes.length > 0 && (

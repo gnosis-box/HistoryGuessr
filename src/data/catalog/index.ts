@@ -1,4 +1,5 @@
 import type { CityHistoryChallenge, GameChallenge } from "@/types/game";
+import { getCustomChallenge } from "@/lib/challenges/customStorage";
 import { baseChallenges } from "./base";
 import { avignonPack } from "./avignonPack";
 import { parisPack } from "./parisPack";
@@ -19,7 +20,7 @@ export function getChallengesByType(type: GameChallenge["type"]): GameChallenge[
 }
 
 export function getChallengeById(id: string): GameChallenge | undefined {
-  return challengeCatalog.find((c) => c.id === id);
+  return getCustomChallenge(id) ?? challengeCatalog.find((c) => c.id === id);
 }
 
 export function getChallengesByPack(packId: string): GameChallenge[] {
