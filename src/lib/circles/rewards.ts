@@ -156,7 +156,7 @@ export function evaluateReward(params: {
       canEarn: true,
       amount,
       status: "pending_trust",
-      reason: `Earn ${historyGuessrGroup.symbol} after trust from ${historyGuessrGroup.name} or Gnosis Group.`,
+      reason: `${historyGuessrGroup.symbol} pending — trust Gnosis Group or ${historyGuessrGroup.name} to unlock.`,
     };
   }
 

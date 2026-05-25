@@ -20,7 +20,7 @@ function isHumanAvatar(type?: string): boolean {
 /** Peers from the Circles trust graph ([Rule of Trust](https://docs.aboutcircles.com/)). */
 export async function fetchTrustPeers(
   avatarAddress: string,
-  limit = 24,
+  limit = 32,
 ): Promise<TrustPeer[]> {
   try {
     const { Sdk } = await import("@aboutcircles/sdk");

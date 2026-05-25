@@ -69,41 +69,75 @@ function diagnoseEnvFiles() {
   return hints;
 }
 
+function normalizePrivateKey(raw) {
+  if (!raw) return null;
+  const cleaned = raw.trim().replace(/^["']|["']$/g, "").replace(/\s/g, "");
+  if (/^0x[a-fA-F0-9]{64}$/.test(cleaned)) return cleaned;
+  if (/^[a-fA-F0-9]{64}$/.test(cleaned)) return `0x${cleaned}`;
+  return cleaned;
+}
+
 function loadSignerPrivateKey() {
-  const raw = process.env.SIGNER_PRIVATE_KEY?.trim().replace(/^["']|["']$/g, "");
-  if (raw) return raw;
+  const fromEnv = normalizePrivateKey(process.env.SIGNER_PRIVATE_KEY);
+  if (fromEnv) return fromEnv;
+
   for (const file of [".env.local", ".env"]) {
     if (!existsSync(file)) continue;
-    const match = readFileSync(file, "utf8").match(
-      /^SIGNER_PRIVATE_KEY=(0x[a-fA-F0-9]{64})\s*$/m,
+    const line = readFileSync(file, "utf8").match(
+      /^SIGNER_PRIVATE_KEY=(.+)\s*$/m,
     );
-    if (match) return match[1];
+    if (!line) continue;
+    const normalized = normalizePrivateKey(line[1]);
+    if (normalized) return normalized;
   }
   return null;
 }
 
 function validateSignerKey(key, safeAddress) {
   if (!key) {
-    return "SIGNER_PRIVATE_KEY is missing.";
+    return { error: "SIGNER_PRIVATE_KEY is missing.", key: null };
   }
   if (key.split(/\s+/).length > 1) {
-    return "You pasted a seed phrase — use the hex private key (0x + 64 hex chars), not the recovery phrase.";
+    return {
+      error:
+        "You pasted a seed phrase — use the hex private key (64 hex chars), not the recovery phrase.",
+      key: null,
+    };
   }
-  if (!PRIVATE_KEY_RE.test(key)) {
-    if (ADDRESS_RE.test(key)) {
-      return "This looks like a wallet ADDRESS (40 hex chars). You need the SIGNER private key (64 hex chars after 0x), usually from MetaMask.";
+
+  const validKey = normalizePrivateKey(key);
+  if (!validKey || !PRIVATE_KEY_RE.test(validKey)) {
+    if (ADDRESS_RE.test(key) || ADDRESS_RE.test(validKey ?? "")) {
+      return {
+        error:
+          "This looks like a wallet ADDRESS (40 hex chars). You need the SIGNER private key (64 hex chars), usually from MetaMask.",
+        key: null,
+      };
     }
-    return `Invalid format: expected 0x + 64 hex characters (66 total), got length ${key.length}.`;
+    return {
+      error: `Invalid format: need 64 hex chars (MetaMask often omits 0x — both work). Got length ${key.length}.`,
+      key: null,
+    };
   }
-  if (key.toLowerCase() === safeAddress.toLowerCase()) {
-    return "SIGNER_PRIVATE_KEY must not be the Safe address — use the MetaMask/signer key that controls the Safe.";
+
+  if (validKey.toLowerCase() === safeAddress.toLowerCase()) {
+    return {
+      error:
+        "SIGNER_PRIVATE_KEY must not be the Safe address — use the MetaMask/signer key that controls the Safe.",
+      key: null,
+    };
   }
+
   try {
-    privateKeyToAccount(key);
+    privateKeyToAccount(validKey);
   } catch {
-    return "Key has correct length but is not a valid secp256k1 private key.";
+    return {
+      error: "Key has correct length but is not a valid secp256k1 private key.",
+      key: null,
+    };
   }
-  return null;
+
+  return { error: null, key: validKey };
 }
 
 const safeAddress = loadEnvAddress("SAFE_ADDRESS", null);
@@ -124,7 +158,10 @@ Option B — one-shot:
   process.exit(1);
 }
 
-const keyError = validateSignerKey(signerKey, safeAddress);
+const { error: keyError, key: signerKeyNormalized } = validateSignerKey(
+  signerKey,
+  safeAddress,
+);
 if (keyError) {
   const hints = diagnoseEnvFiles();
   console.error(`\n❌ ${keyError}\n`);
@@ -136,7 +173,7 @@ if (keyError) {
   console.error(`Fix .env.local (loaded via --env-file=.env.local):
 
   SAFE_ADDRESS=0xD55a912aF5639a6769AE5c1894C0c7BFB5Bf539E
-  SIGNER_PRIVATE_KEY=0x<64_hex_chars_from_MetaMask>
+  SIGNER_PRIVATE_KEY=<64_hex_from_MetaMask>   # 0x prefix optional
 
   No # at the start of SIGNER_PRIVATE_KEY line.
   Not .env.example — only .env.local is read.
@@ -148,7 +185,7 @@ See scripts/WALLET-GNOSIS-HIST.md
 
 let signerAddress;
 try {
-  signerAddress = privateKeyToAccount(signerKey).address;
+  signerAddress = privateKeyToAccount(signerKeyNormalized).address;
 } catch {
   signerAddress = "(unknown)";
 }
@@ -159,7 +196,7 @@ const publicClient = createPublicClient({ chain: gnosis, transport: http(rpc) })
 
 const runner = new SafeContractRunner(
   publicClient,
-  signerKey,
+  signerKeyNormalized,
   rpc,
   safeAddress,
 );
@@ -172,19 +209,36 @@ await runner.init();
 
 const sdk = new Sdk(undefined, runner);
 
-const groupAvatar = await sdk.register.asGroup(
-  safeAddress,
-  safeAddress,
-  safeAddress,
-  [],
-  "History Guessr",
-  "HIST",
-  {
-    name: "History Guessr",
-    description:
-      "Group currency for cultural quests, sources, and curation on History Guessr.",
-  },
-);
+let groupAvatar;
+try {
+  groupAvatar = await sdk.register.asGroup(
+    safeAddress,
+    safeAddress,
+    safeAddress,
+    [],
+    "History Guessr",
+    "HIST",
+    {
+      name: "History Guessr",
+      description:
+        "Group currency for cultural quests, sources, and curation on History Guessr.",
+    },
+  );
+} catch (err) {
+  const msg = err?.shortMessage ?? err?.message ?? String(err);
+  if (/insufficient funds/i.test(msg)) {
+    console.error(`
+❌ Gas insuffisant sur le signataire MetaMask (pas sur le Safe Circles).
+
+Le script paie le gas avec l'EOA signataire: ${signerAddress}
+
+Envoie ~0.01 xDAI sur Gnosis Chain à cette adresse, puis relance:
+  npm run hist:register-group-safe
+`);
+    process.exit(1);
+  }
+  throw err;
+}
 
 console.log("✅ HIST group deployed\n");
 console.log("Group address:", groupAvatar.address);

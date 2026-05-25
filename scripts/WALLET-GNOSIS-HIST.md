@@ -1,5 +1,42 @@
 # Gnosis Wallet + déploiement HIST
 
+## Tu ne trouves pas la clé ? (le plus fréquent)
+
+Ce n’est **pas** un échec de ta part.
+
+| Situation | Pourquoi tu ne vois pas « Clé privée » |
+|-----------|----------------------------------------|
+| Connexion **passkey** / email dans Gnosis | Aucune clé exportable — normal |
+| Compte MetaMask **Smart Account** | Pas de clé classique dans le menu |
+| Tu regardes l’adresse **Safe** `0xD55a…` | C’est un contrat, jamais de clé |
+| MetaMask = **Ledger** / watch-only | La clé n’est pas dans MetaMask |
+
+**Recommandation : ne pas chercher plus longtemps.** Utilise l’**option simple** ci-dessous.
+
+## Option simple — wallet opérateur neuf (sans Safe)
+
+Le groupe HIST sera créé par un **petit wallet à part**, pas par Lenormand. L’app et ton profil Circles restent inchangés.
+
+1. MetaMask → **Créer un compte** (note la phrase de récupération une fois — c’est ton accès, pas besoin de la coller dans le projet).
+2. Réseau **Gnosis Chain** → envoie **~0,01 xDAI** sur ce nouveau compte (faucet ou depuis un autre wallet).
+3. Dans **`.env.local` uniquement** (jamais `.env.example`, jamais git) :
+
+```env
+OPERATOR_PRIVATE_KEY=0x<clé_du_nouveau_compte>
+```
+
+4. Déploie :
+
+```bash
+npm run hist:register-group
+```
+
+5. Copie `VITE_HIST_GROUP_ADDRESS=0x…` → Vercel → redeploy.
+
+Tu n’as **pas** besoin de `SAFE_ADDRESS` ni de `SIGNER_PRIVATE_KEY` pour cette voie.
+
+---
+
 ## Ton adresse Circles
 
 | Champ | Valeur |
@@ -19,13 +56,21 @@ La clé privée appartient au **signataire** qui approuve les transactions dans 
 
 | Type de connexion | Clé exportable ? |
 |-------------------|------------------|
-| **MetaMask** (ou autre EOA) | Oui — dans MetaMask : compte → ⋮ → Détails → Afficher la clé privée |
+| **MetaMask** (EOA classique) | Parfois oui — voir ci-dessous |
 | **Passkey / email / social** | Non — pas de clé à copier |
 | **Ledger / Trezor** | La clé reste sur l’appareil (pas dans Gnosis) |
 
-Si tu n’as **aucune** clé exportable, utilise une **nouvelle EOA** dédiée opérateur (créer un wallet MetaMask vide, l’inviter comme owner du Safe ou l’utiliser seul pour `hist:register-group` classique).
+Si tu n’as **aucune** clé exportable → **option simple** en haut de ce fichier (`hist:register-group`).
 
-## Déployer HIST avec ton Safe (recommandé)
+### MetaMask : où est le menu (si tu insistes)
+
+1. Ouvre MetaMask → vérifie que le compte affiché est bien **`0xFf34…856e`** (external owner), pas `0xD55a…` (Safe).
+2. ⋮ à côté du compte → **Détails du compte** (Account details).
+3. **Afficher la clé privée** / Show private key → mot de passe MetaMask.
+
+Si l’étape 3 **n’existe pas** : compte smart / import spécial → arrête, utilise l’**option simple**.
+
+## Déployer HIST avec ton Safe (optionnel, plus difficile)
 
 ```bash
 SAFE_ADDRESS=0xD55a912aF5639a6769AE5c1894C0c7BFB5Bf539E \
@@ -36,9 +81,13 @@ npm run hist:register-group-safe
 | Variable | Format | Exemple |
 |----------|--------|---------|
 | `SAFE_ADDRESS` | `0x` + **40** hex | `0xD55a912a…539E` |
-| `SIGNER_PRIVATE_KEY` | `0x` + **64** hex | clé MetaMask du signataire |
+| `SIGNER_PRIVATE_KEY` | **64** hex (préfixe `0x` optionnel) | clé MetaMask du signataire |
 
-**Erreur fréquente** `invalid private key, expected hex or 32 bytes` → tu as mis l’**adresse** du Safe (ou une phrase de récupération) au lieu de la **clé privée** du signataire MetaMask.
+**Erreurs fréquentes**
+
+- `got length 64` → MetaMask exporte souvent **sans** `0x` ; c’est OK après mise à jour du script.
+- `invalid private key` → adresse Safe ou phrase de récupération au lieu de la clé MetaMask (64 hex).
+- `insufficient funds` → le signataire MetaMask (`0xFf34…` chez toi) n’a **pas de xDAI** pour le gas. Envoie ~0,01 xDAI sur **Gnosis Chain** à cette adresse (les CRC sur le Safe ne paient pas ce gas).
 
 Puis dans `.env.local` :
 

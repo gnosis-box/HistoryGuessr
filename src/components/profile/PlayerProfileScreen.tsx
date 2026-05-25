@@ -6,6 +6,7 @@ import { badgeTierStyles } from "@/utils/accentStyles";
 import { formatHist } from "@/utils/format";
 import { BadgeCollection } from "./BadgeCollection";
 import { CirclesSetupPanel } from "@/components/circles/CirclesSetupPanel";
+import { TrustGraphView } from "@/components/circles/TrustGraphView";
 
 function shortenAddress(addr: string): string {
   return `${addr.slice(0, 6)}…${addr.slice(-4)}`;
@@ -32,6 +33,9 @@ export function PlayerProfileScreen() {
     ledger,
     claimRewards,
     profile,
+    trustPeers,
+    trustsHistGroup,
+    isLoadingProfile,
   } = useCircles();
   const { reputation, currentTitle, earnedBadgeList } = useReputation();
   const [claimMsg, setClaimMsg] = useState<string | null>(null);
@@ -116,6 +120,14 @@ export function PlayerProfileScreen() {
           </p>
         )}
       </section>
+
+      <TrustGraphView
+        trustPeers={trustPeers}
+        selfLabel={displayName}
+        trustsHistGroup={trustsHistGroup}
+        isLoading={isLoadingProfile}
+        isConnected={isConnected}
+      />
 
       <CirclesSetupPanel />
 

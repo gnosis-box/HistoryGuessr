@@ -6,6 +6,7 @@ import { peerDisplayName } from "@/lib/circles/trustGraph";
 import { getPeerBenchmarkScore } from "@/lib/circles/trustLeaderboard";
 import { createFriendChallengeFrom } from "@/utils/friendChallenge";
 import type { GameChallenge } from "@/types/game";
+import { TrustGraphView } from "@/components/circles/TrustGraphView";
 import { getCirclesPlaygroundUrl } from "@/utils/appUrl";
 
 interface TrustDuelScreenProps {
@@ -14,7 +15,13 @@ interface TrustDuelScreenProps {
 }
 
 export function TrustDuelScreen({ onStartDuel, onBack }: TrustDuelScreenProps) {
-  const { isConnected, isLoadingProfile, trustPeers, profile } = useCircles();
+  const {
+    isConnected,
+    isLoadingProfile,
+    trustPeers,
+    profile,
+    trustsHistGroup,
+  } = useCircles();
 
   const mapPool = useMemo(() => getChallengesByType("place_guess"), []);
 
@@ -66,6 +73,15 @@ export function TrustDuelScreen({ onStartDuel, onBack }: TrustDuelScreenProps) {
           . Duels use real profile names — scores compare on the same map clue.
         </p>
       </header>
+
+      <TrustGraphView
+        trustPeers={trustPeers}
+        selfLabel={profile.name ?? "You"}
+        trustsHistGroup={trustsHistGroup}
+        isLoading={isLoadingProfile}
+        isConnected={isConnected}
+        compact
+      />
 
       {!isConnected && (
         <p className="glass-card rounded-xl p-4 text-sm text-sky-200">

@@ -10,7 +10,7 @@
     "preview": "vite preview",
     "docker:build": "docker build -t history-guessr .",
     "docker:run": "docker run --rm -p 8080:80 history-guessr",
-    "hist:register-group": "node scripts/register-hist-group.mjs",
+    "hist:register-group": "node --env-file=.env.local scripts/register-hist-group.mjs",
     "hist:register-group-safe": "node --env-file=.env.local scripts/register-hist-group-safe.mjs",
     "hist:check": "node scripts/check-hist-group.mjs",
     "hist:distribute": "node scripts/distribute-hist-rewards.mjs",

@@ -13,16 +13,16 @@ export interface VouchContext {
 export function resolveVouchStatus(ctx: VouchContext): VouchStatus {
   if (!ctx.isConnected) return "guest";
   if (ctx.isHistMember || ctx.trustsHistGroup) return "member";
-  if (ctx.trustGatePasses) return "pending";
   return "pending";
 }
 
+/** @deprecated Prefer buildHistRewardUiState in RewardPanel */
 export function vouchCopy(status: VouchStatus): string {
   switch (status) {
     case "member":
-      return `Connected to ${historyGuessrGroup.name} — full ${historyGuessrGroup.symbol} rewards. Trust the HIST group in Circles to hold group currency.`;
+      return `Connected to ${historyGuessrGroup.name} — full ${historyGuessrGroup.symbol} rewards.`;
     case "pending":
-      return `Earn ${historyGuessrGroup.symbol} after trust from ${historyGuessrGroup.name} or the Gnosis Group anchor. Trust the HIST group avatar in Circles when it is deployed.`;
+      return `Unlock on-chain ${historyGuessrGroup.symbol} by trusting Gnosis Group or the HIST group avatar.`;
     default:
       return "Connect Circles to link rewards to your wallet and trust graph.";
   }
