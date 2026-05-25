@@ -9,62 +9,9 @@
  *   GNOSIS_RPC_URL=https://rpc.gnosischain.com
  */
 import { Sdk } from "@aboutcircles/sdk";
-import { createPublicClient, createWalletClient, http } from "viem";
-import { privateKeyToAccount } from "viem/accounts";
-import { gnosis } from "viem/chains";
+import { createCirclesRunner } from "./circles-runner.mjs";
 
-const pk = process.env.OPERATOR_PRIVATE_KEY;
-if (!pk?.startsWith("0x")) {
-  console.error(`
-Missing OPERATOR_PRIVATE_KEY (0x… hex).
-
-Example:
-  OPERATOR_PRIVATE_KEY=0xYOUR_KEY npm run hist:register-group
-
-Requirements:
-  - Wallet on Gnosis Chain with CRC for gas
-  - Operator should already be registered in Circles (human/org avatar)
-`);
-  process.exit(1);
-}
-
-const rpc = process.env.GNOSIS_RPC_URL ?? "https://rpc.gnosischain.com";
-const account = privateKeyToAccount(pk);
-
-const publicClient = createPublicClient({
-  chain: gnosis,
-  transport: http(rpc),
-});
-
-const walletClient = createWalletClient({
-  account,
-  chain: gnosis,
-  transport: http(rpc),
-});
-
-/** Minimal ContractRunner for @aboutcircles/sdk register.asGroup */
-const contractRunner = {
-  address: account.address,
-  publicClient,
-  async init() {},
-  async sendTransaction(txs) {
-    let receipt;
-    for (const tx of txs) {
-      const hash = await walletClient.sendTransaction({
-        account,
-        chain: gnosis,
-        to: tx.to,
-        data: tx.data,
-        value: tx.value ?? 0n,
-      });
-      receipt = await publicClient.waitForTransactionReceipt({ hash });
-      if (receipt.status !== "success") {
-        throw new Error(`Transaction reverted: ${hash}`);
-      }
-    }
-    return receipt;
-  },
-};
+const { account, rpc, contractRunner } = createCirclesRunner();
 
 console.log("Operator:", account.address);
 console.log("RPC:", rpc);

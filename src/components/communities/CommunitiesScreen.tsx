@@ -3,6 +3,8 @@ import { useCircles } from "@/hooks/use-circles";
 import { useCommunities } from "@/hooks/use-communities";
 import { canAccessCommunity } from "@/lib/communities/access";
 import { buildQuizShareUrl, copyShareLink } from "@/lib/communities/share";
+import { buildQuizShareBundle } from "@/lib/communities/shareBundle";
+import { getCustomChallengesForCommunity } from "@/lib/challenges/customStorage";
 import { CreateCommunityForm } from "./CreateCommunityForm";
 import { CreateQuizForm } from "./CreateQuizForm";
 
@@ -21,7 +23,12 @@ export function CommunitiesScreen({ onPlayQuiz }: CommunitiesScreenProps) {
   const founder = address ?? "";
 
   async function handleCopyLink(communityId: string, quizId: string) {
-    const url = buildQuizShareUrl(communityId, quizId);
+    const bundle = buildQuizShareBundle(
+      communityId,
+      quizId,
+      getCustomChallengesForCommunity(communityId),
+    );
+    const url = buildQuizShareUrl(communityId, quizId, bundle);
     try {
       await copyShareLink(url);
       setCopyStatus(quizId);
@@ -38,9 +45,16 @@ export function CommunitiesScreen({ onPlayQuiz }: CommunitiesScreenProps) {
           Trusted circles
         </h1>
         <p className="mt-2 text-sm text-[var(--text-secondary)]">
-          Create a community, invite wallets you trust, build a custom quiz from
-          the catalog, and share a link — others open it in History Guessr or the
-          Circles playground.
+          Interest-based circles for custom quizzes — aligned with{" "}
+          <a
+            href="https://docs.aboutcircles.com/overview/how-it-works/group-currencies.md"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-[var(--gold-soft)] underline"
+          >
+            Circles Group currencies
+          </a>
+          . Invite wallets you trust, build a quiz, share a portable link.
         </p>
       </header>
 

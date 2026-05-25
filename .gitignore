@@ -11,6 +11,8 @@ node_modules
 dist
 dist-ssr
 *.local
+.env.local
+hist-ledger-export.json
 deploy/
 
 # Editor directories and files

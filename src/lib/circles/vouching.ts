@@ -2,41 +2,28 @@ import { historyGuessrGroup } from "./config";
 
 export type VouchStatus = "guest" | "pending" | "member";
 
-const VOUCH_KEY = "history-guessr-vouch";
-
-export function getVouchStatus(address: string | null): VouchStatus {
-  if (!address) return "guest";
-  try {
-    const raw = localStorage.getItem(VOUCH_KEY);
-    const map = raw ? (JSON.parse(raw) as Record<string, VouchStatus>) : {};
-    return map[address.toLowerCase()] ?? "pending";
-  } catch {
-    return "pending";
-  }
+export interface VouchContext {
+  isConnected: boolean;
+  isHistMember: boolean;
+  trustsHistGroup: boolean;
+  trustGatePasses: boolean;
 }
 
-export function requestVouch(address: string): void {
-  const raw = localStorage.getItem(VOUCH_KEY);
-  const map = raw ? (JSON.parse(raw) as Record<string, VouchStatus>) : {};
-  map[address.toLowerCase()] = "pending";
-  localStorage.setItem(VOUCH_KEY, JSON.stringify(map));
-}
-
-/** Demo: simulate approval after 2+ local "vouches" — replace with on-chain group membership */
-export function simulateMemberApproval(address: string): void {
-  const raw = localStorage.getItem(VOUCH_KEY);
-  const map = raw ? (JSON.parse(raw) as Record<string, VouchStatus>) : {};
-  map[address.toLowerCase()] = "member";
-  localStorage.setItem(VOUCH_KEY, JSON.stringify(map));
+/** Resolve membership from Circles Groups + trust graph (replaces localStorage demo). */
+export function resolveVouchStatus(ctx: VouchContext): VouchStatus {
+  if (!ctx.isConnected) return "guest";
+  if (ctx.isHistMember || ctx.trustsHistGroup) return "member";
+  if (ctx.trustGatePasses) return "pending";
+  return "pending";
 }
 
 export function vouchCopy(status: VouchStatus): string {
   switch (status) {
     case "member":
-      return `Member of ${historyGuessrGroup.name} — full ${historyGuessrGroup.symbol} rewards.`;
+      return `Connected to ${historyGuessrGroup.name} — full ${historyGuessrGroup.symbol} rewards. Trust the HIST group in Circles to hold group currency.`;
     case "pending":
-      return "Awaiting vouch from trusted historians (no KYC — social verification).";
+      return `Earn ${historyGuessrGroup.symbol} after trust from ${historyGuessrGroup.name} or the Gnosis Group anchor. Trust the HIST group avatar in Circles when it is deployed.`;
     default:
-      return "Connect Circles to request access to the history group.";
+      return "Connect Circles to link rewards to your wallet and trust graph.";
   }
 }

@@ -2,7 +2,7 @@
 export const devRelaxTrust =
   import.meta.env.VITE_DEV_RELAX_TRUST === "true";
 
-/** History Guessr group currency — configure when the on-chain group exists. */
+/** History Guessr group currency — mint/redeem via member CRC collateral ([Circles docs](https://docs.aboutcircles.com/overview/how-it-works/group-currencies.md)). */
 export const historyGuessrGroup = {
   symbol: "HIST",
   name: "History Guessr",

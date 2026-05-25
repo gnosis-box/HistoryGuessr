@@ -5,6 +5,7 @@ import { historyGuessrGroup } from "@/lib/circles/config";
 import { badgeTierStyles } from "@/utils/accentStyles";
 import { formatHist } from "@/utils/format";
 import { BadgeCollection } from "./BadgeCollection";
+import { CirclesSetupPanel } from "@/components/circles/CirclesSetupPanel";
 
 function shortenAddress(addr: string): string {
   return `${addr.slice(0, 6)}…${addr.slice(-4)}`;
@@ -115,6 +116,8 @@ export function PlayerProfileScreen() {
           </p>
         )}
       </section>
+
+      <CirclesSetupPanel />
 
       {ledger.pending > 0 && (
         <section className="glass-card flex flex-wrap items-center justify-between gap-3 rounded-xl px-4 py-3">

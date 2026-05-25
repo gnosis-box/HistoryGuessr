@@ -20,10 +20,15 @@ import {
 } from "@/components/SessionCompleteScreen";
 import { PlayerProfileScreen } from "@/components/profile/PlayerProfileScreen";
 import { CommunitiesScreen } from "@/components/communities/CommunitiesScreen";
+import { TrustDuelScreen } from "@/components/play/TrustDuelScreen";
 import { CityPicker } from "@/components/play/CityPicker";
 import { canAccessCommunity } from "@/lib/communities/access";
-import { getCommunity, getQuiz } from "@/lib/communities/storage";
 import { parseQuizShareParams } from "@/lib/communities/share";
+import {
+  decodeQuizShareBundle,
+  importQuizShareBundle,
+  resolveQuizFromShare,
+} from "@/lib/communities/shareBundle";
 import { buildSessionQueue } from "@/lib/session/sessionQueue";
 import { useCircles } from "@/hooks/use-circles";
 import type { ChallengeType, GameChallenge } from "@/types/game";
@@ -54,6 +59,7 @@ export default function App() {
   const [pendingShare, setPendingShare] = useState<{
     communityId: string;
     quizId: string;
+    sharePayload?: string;
   } | null>(() => parseQuizShareParams(window.location.search));
 
   const goHome = useCallback(() => {
@@ -97,15 +103,25 @@ export default function App() {
   );
 
   const startCommunityQuiz = useCallback(
-    (communityId: string, quizId: string, viaShareLink = false) => {
-      const community = getCommunity(communityId);
-      const quiz = getQuiz(quizId);
-      if (!community || !quiz || quiz.communityId !== communityId) {
+    (
+      communityId: string,
+      quizId: string,
+      viaShareLink = false,
+      sharePayload?: string,
+    ) => {
+      if (sharePayload) {
+        const bundle = decodeQuizShareBundle(sharePayload);
+        if (bundle) importQuizShareBundle(bundle);
+      }
+
+      const resolved = resolveQuizFromShare(communityId, quizId);
+      if (!resolved) {
         setShareError("This invite link is invalid or expired.");
         setScreen("home");
         return;
       }
 
+      const { community, quiz, challengeIds: queue } = resolved;
       const access = canAccessCommunity(community, address, { viaShareLink });
       if (!access.allowed) {
         setShareError(access.reason);
@@ -113,23 +129,21 @@ export default function App() {
         return;
       }
 
-      const queue = quiz.challengeIds.filter((id) => getChallengeById(id));
-      if (queue.length === 0) {
-        setShareError("This quiz has no valid challenges.");
-        return;
-      }
-
       const first = getChallengeById(queue[0]);
       if (!first) return;
 
       setShareError(null);
-      startSession(first, {
-        kind: "community",
-        communityId,
-        quizId,
-        quizTitle: quiz.title,
-        communityName: community.name,
-      }, queue);
+      startSession(
+        first,
+        {
+          kind: "community",
+          communityId,
+          quizId,
+          quizTitle: quiz.title,
+          communityName: community.name,
+        },
+        queue,
+      );
     },
     [address, startSession],
   );
@@ -140,6 +154,7 @@ export default function App() {
       pendingShare.communityId,
       pendingShare.quizId,
       true,
+      pendingShare.sharePayload,
     );
     setPendingShare(null);
     window.history.replaceState({}, "", window.location.pathname);
@@ -151,6 +166,13 @@ export default function App() {
 
     if (type === "city_history") {
       setScreen("city_pick");
+      setPlaySession({ kind: "mode", modeType: type });
+      setChallengeQueue([]);
+      return;
+    }
+
+    if (type === "friend_challenge") {
+      setScreen("trust_duel");
       setPlaySession({ kind: "mode", modeType: type });
       setChallengeQueue([]);
       return;
@@ -218,10 +240,18 @@ export default function App() {
     setScreen("session_complete");
   }
 
+  function startTrustDuel(duelChallenge: GameChallenge) {
+    startSession(duelChallenge, { kind: "mode", modeType: "friend_challenge" }, [
+      duelChallenge.id,
+    ]);
+  }
+
   const activeMode: ChallengeType | null =
     screen === "city_pick"
       ? "city_history"
-      : challenge?.type ?? null;
+      : screen === "trust_duel"
+        ? "friend_challenge"
+        : challenge?.type ?? null;
 
   const navValue = useMemo(
     () => ({
@@ -307,6 +337,13 @@ export default function App() {
             </p>
             <CityPicker onSelect={handleCitySelect} />
           </div>
+        )}
+
+        {screen === "trust_duel" && (
+          <TrustDuelScreen
+            onStartDuel={startTrustDuel}
+            onBack={() => openCategory("map")}
+          />
         )}
 
         {screen === "play" && challenge && (

@@ -5,6 +5,7 @@ export type AppScreen =
   | "home"
   | "category"
   | "city_pick"
+  | "trust_duel"
   | "play"
   | "session_complete"
   | "profile"

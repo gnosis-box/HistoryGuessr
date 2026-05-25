@@ -21,12 +21,18 @@ import {
   type RewardLedger,
 } from "./rewards";
 import { fetchTrustGate, type TrustGateResult } from "./trust";
-import { getVouchStatus, type VouchStatus } from "./vouching";
+import { resolveVouchStatus, type VouchStatus } from "./vouching";
+import { claimPendingHist } from "./payout";
+import {
+  fetchHistGroupTreasury,
+  isHistGroupMember,
+  userTrustsGroup,
+  type GroupTreasurySummary,
+} from "./groups";
+import { devRelaxTrust, historyGuessrGroup } from "./config";
+import { fetchTrustPeers, type TrustPeer } from "./trustGraph";
 
 export type { VouchStatus };
-import { claimPendingHist } from "./payout";
-import { isHistGroupMember } from "./groups";
-import { devRelaxTrust, historyGuessrGroup } from "./config";
 
 interface CirclesContextValue {
   address: string | null;
@@ -39,6 +45,9 @@ interface CirclesContextValue {
   ledger: RewardLedger;
   trustGate: TrustGateResult | null;
   vouchStatus: VouchStatus;
+  trustPeers: TrustPeer[];
+  histTreasury: GroupTreasurySummary | null;
+  trustsHistGroup: boolean;
   processChallengeReward: (
     score: number,
     challenge: GameChallenge,
@@ -57,22 +66,32 @@ export function CirclesProvider({ children }: { children: ReactNode }) {
   const [ledger, setLedger] = useState<RewardLedger>(() => loadLedger());
   const [trustGate, setTrustGate] = useState<TrustGateResult | null>(null);
   const [isHistMember, setIsHistMember] = useState(false);
+  const [trustsHistGroup, setTrustsHistGroup] = useState(false);
+  const [trustPeers, setTrustPeers] = useState<TrustPeer[]>([]);
+  const [histTreasury, setHistTreasury] = useState<GroupTreasurySummary | null>(
+    null,
+  );
 
   const loadProfile = useCallback(async (addr: string) => {
     setIsLoadingProfile(true);
     setProfileError(null);
     try {
-      const [fetched, trust] = await Promise.all([
-        fetchCirclesProfile(addr),
-        fetchTrustGate(addr),
-      ]);
+      const groupAddr = historyGuessrGroup.groupAddress;
+      const [fetched, trust, peers, treasury, member, trustsGroup] =
+        await Promise.all([
+          fetchCirclesProfile(addr),
+          fetchTrustGate(addr),
+          fetchTrustPeers(addr),
+          fetchHistGroupTreasury(),
+          groupAddr ? isHistGroupMember(addr) : Promise.resolve(false),
+          groupAddr ? userTrustsGroup(addr, groupAddr) : Promise.resolve(false),
+        ]);
       setProfile(fetched);
       setTrustGate(trust);
-      if (historyGuessrGroup.groupAddress) {
-        setIsHistMember(await isHistGroupMember(addr));
-      } else {
-        setIsHistMember(false);
-      }
+      setTrustPeers(peers);
+      setHistTreasury(treasury);
+      setIsHistMember(member);
+      setTrustsHistGroup(trustsGroup);
     } catch (err) {
       setProfileError(
         err instanceof Error ? err.message : "Could not load Circles profile",
@@ -98,6 +117,9 @@ export function CirclesProvider({ children }: { children: ReactNode }) {
         setProfileError(null);
         setTrustGate(null);
         setIsHistMember(false);
+        setTrustsHistGroup(false);
+        setTrustPeers([]);
+        setHistTreasury(null);
       }
     }).then(({ unsubscribe: unsub, isMiniappHost: host }) => {
       unsubscribe = unsub;
@@ -114,10 +136,14 @@ export function CirclesProvider({ children }: { children: ReactNode }) {
   const vouchStatus: VouchStatus =
     devRelaxTrust && address
       ? "member"
-      : isHistMember
-        ? "member"
-        : getVouchStatus(address);
-  const isGroupMember = isHistMember || vouchStatus === "member";
+      : resolveVouchStatus({
+          isConnected: Boolean(address),
+          isHistMember,
+          trustsHistGroup,
+          trustGatePasses: trustGate?.passesGate ?? false,
+        });
+  const isGroupMember =
+    isHistMember || trustsHistGroup || (devRelaxTrust && Boolean(address));
 
   const displayProfile = useMemo<CirclesProfile>(() => {
     const base = profile
@@ -183,6 +209,9 @@ export function CirclesProvider({ children }: { children: ReactNode }) {
       ledger,
       trustGate,
       vouchStatus,
+      trustPeers,
+      histTreasury,
+      trustsHistGroup,
       processChallengeReward,
       claimRewards,
     }),
@@ -196,6 +225,9 @@ export function CirclesProvider({ children }: { children: ReactNode }) {
       ledger,
       trustGate,
       vouchStatus,
+      trustPeers,
+      histTreasury,
+      trustsHistGroup,
       processChallengeReward,
       claimRewards,
     ],

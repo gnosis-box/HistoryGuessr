@@ -18,6 +18,8 @@ export function RewardPanel({ eligibility }: RewardPanelProps) {
     isMiniappHost,
     claimRewards,
     address,
+    trustsHistGroup,
+    histTreasury,
   } = useCircles();
   const [claimMsg, setClaimMsg] = useState<string | null>(null);
 
@@ -65,6 +67,13 @@ export function RewardPanel({ eligibility }: RewardPanelProps) {
               Trust vs Gnosis Group:{" "}
               {(trustGate.relativeScore * 100).toFixed(1)}% ·{" "}
               {trustGate.targetsReached}/{trustGate.totalTargets} targets
+              {trustsHistGroup && " · you trust HIST group"}
+            </p>
+          )}
+          {histTreasury?.hasTreasury && (
+            <p className="mt-1 text-xs text-[var(--text-secondary)]/80">
+              HIST treasury collateral: ~{histTreasury.collateralCrc} CRC locked
+              for group rewards.
             </p>
           )}
         </>
@@ -87,7 +96,8 @@ export function RewardPanel({ eligibility }: RewardPanelProps) {
 
       {!devRelaxTrust && vouchStatus === "pending" && address && (
         <p className="mt-2 text-xs text-sky-300/90">
-          Ask 2+ trusted members to vouch you into {historyGuessrGroup.name}.
+          Trust the {historyGuessrGroup.name} group avatar in Circles, or reach
+          the Gnosis Group trust anchor to unlock full {historyGuessrGroup.symbol}.
         </p>
       )}
 
