@@ -10,7 +10,12 @@ import {
 } from "react";
 import type { GameChallenge } from "@/types/game";
 import { fetchCirclesProfile } from "./profile";
-import { subscribeWallet } from "./host";
+import { signInMessage, subscribeWallet } from "./host";
+import {
+  clearSessionSignIn,
+  readSessionSignIn,
+  writeSessionSignIn,
+} from "./sessionSignIn";
 import { mockCirclesProfile } from "./mockCirclesProfile";
 import type { CirclesProfile } from "./types";
 import {
@@ -53,6 +58,8 @@ interface CirclesContextValue {
     challenge: GameChallenge,
   ) => RewardEligibility;
   claimRewards: () => Promise<string>;
+  hasSignedIn: boolean;
+  completeSignIn: () => Promise<boolean>;
 }
 
 const CirclesContext = createContext<CirclesContextValue | null>(null);
@@ -71,6 +78,7 @@ export function CirclesProvider({ children }: { children: ReactNode }) {
   const [histTreasury, setHistTreasury] = useState<GroupTreasurySummary | null>(
     null,
   );
+  const [hasSignedIn, setHasSignedIn] = useState(false);
 
   const loadProfile = useCallback(async (addr: string) => {
     setIsLoadingProfile(true);
@@ -120,6 +128,8 @@ export function CirclesProvider({ children }: { children: ReactNode }) {
         setTrustsHistGroup(false);
         setTrustPeers([]);
         setHistTreasury(null);
+        setHasSignedIn(false);
+        clearSessionSignIn();
       }
     }).then(({ unsubscribe: unsub, isMiniappHost: host }) => {
       unsubscribe = unsub;
@@ -132,6 +142,32 @@ export function CirclesProvider({ children }: { children: ReactNode }) {
   const refreshProfile = useCallback(async () => {
     if (address) await loadProfile(address);
   }, [address, loadProfile]);
+
+  useEffect(() => {
+    if (!address) {
+      setHasSignedIn(false);
+      return;
+    }
+    if (isMiniappHost) {
+      writeSessionSignIn(address);
+      setHasSignedIn(true);
+      return;
+    }
+    setHasSignedIn(readSessionSignIn(address));
+  }, [address, isMiniappHost]);
+
+  const completeSignIn = useCallback(async (): Promise<boolean> => {
+    if (!address || !isMiniappHost) return false;
+    try {
+      const nonce = crypto.randomUUID().slice(0, 8);
+      const { verified } = await signInMessage(nonce);
+      writeSessionSignIn(address);
+      setHasSignedIn(true);
+      return verified;
+    } catch {
+      return false;
+    }
+  }, [address, isMiniappHost]);
 
   const vouchStatus: VouchStatus =
     devRelaxTrust && address
@@ -214,6 +250,8 @@ export function CirclesProvider({ children }: { children: ReactNode }) {
       trustsHistGroup,
       processChallengeReward,
       claimRewards,
+      hasSignedIn,
+      completeSignIn,
     }),
     [
       address,
@@ -230,6 +268,8 @@ export function CirclesProvider({ children }: { children: ReactNode }) {
       trustsHistGroup,
       processChallengeReward,
       claimRewards,
+      hasSignedIn,
+      completeSignIn,
     ],
   );
 

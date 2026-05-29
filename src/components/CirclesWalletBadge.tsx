@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { useCircles } from "@/hooks/use-circles";
 import { shortenAddress } from "@/lib/circles/format";
-import { signInMessage } from "@/lib/circles/host";
 
 export function CirclesWalletBadge() {
   const {
@@ -11,19 +10,23 @@ export function CirclesWalletBadge() {
     isLoadingProfile,
     profileError,
     refreshProfile,
+    hasSignedIn,
+    completeSignIn,
   } = useCircles();
   const [signStatus, setSignStatus] = useState<string | null>(null);
 
+  const showSignIn =
+    isConnected && isMiniappHost && !hasSignedIn;
+
   async function handleSignIn() {
-    if (!isMiniappHost) return;
-    try {
-      const nonce = crypto.randomUUID().slice(0, 8);
-      const { verified } = await signInMessage(nonce);
-      setSignStatus(verified ? "Signed in" : "Signed (unverified)");
-      window.setTimeout(() => setSignStatus(null), 3000);
-    } catch {
+    setSignStatus(null);
+    const verified = await completeSignIn();
+    if (verified) {
+      setSignStatus("Signed in");
+    } else {
       setSignStatus("Sign-in failed");
     }
+    window.setTimeout(() => setSignStatus(null), 3000);
   }
 
   return (
@@ -71,7 +74,7 @@ export function CirclesWalletBadge() {
       </div>
 
       {isConnected && isMiniappHost && (
-        <div className="flex gap-1">
+        <div className="flex items-center gap-1">
           <button
             type="button"
             className="rounded-full border border-white/10 px-2 py-0.5 text-[10px] text-[var(--text-secondary)] hover:border-[var(--accent)]/40"
@@ -79,13 +82,20 @@ export function CirclesWalletBadge() {
           >
             Refresh
           </button>
-          <button
-            type="button"
-            className="rounded-full border border-white/10 px-2 py-0.5 text-[10px] text-[var(--accent-soft)] hover:border-[var(--accent)]/40"
-            onClick={() => void handleSignIn()}
-          >
-            Sign in
-          </button>
+          {showSignIn && (
+            <button
+              type="button"
+              className="rounded-full border border-white/10 px-2 py-0.5 text-[10px] text-[var(--accent-soft)] hover:border-[var(--accent)]/40"
+              onClick={() => void handleSignIn()}
+            >
+              Sign in
+            </button>
+          )}
+          {hasSignedIn && !showSignIn && (
+            <span className="px-1 text-[10px] text-[var(--success)]">
+              Session active
+            </span>
+          )}
         </div>
       )}
 
