@@ -19,11 +19,11 @@ export function CirclesHubTeaser() {
           Circles
         </p>
         <h2 className="mt-2 font-display text-2xl font-semibold text-[var(--text-primary)]">
-          Jouer, inviter, échanger
+          Play, invite, redeem
         </h2>
         <p className="mt-2 max-w-2xl text-sm text-[var(--text-secondary)]">
-          Tout le social Circles au même endroit : duels entre amis de confiance,
-          cercles avec quiz partagés, et conversion HIST → CRC.
+          All Circles social features in one place: trust-graph duels, circles
+          with shared quizzes, and HIST → CRC redemption.
         </p>
       </div>
       <div className="grid gap-3 sm:grid-cols-3">
@@ -51,7 +51,7 @@ export function CirclesHubTeaser() {
         className="text-sm font-medium text-[var(--gold-soft)] hover:underline"
         onClick={openCommunities}
       >
-        Ouvrir l’espace Circles complet →
+        Open full Circles hub →
       </button>
     </section>
   );

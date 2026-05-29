@@ -50,7 +50,7 @@ export function CirclesRedeemPanel({ onOpenHist }: CirclesRedeemPanelProps) {
             {redeem.circlesAppLabel}
           </a>
           <button type="button" className="btn-secondary" onClick={onOpenHist}>
-            Détails {historyGuessrGroup.symbol} dans l’app
+            {historyGuessrGroup.symbol} details in-app
           </button>
           <a
             href={redeem.docsUrl}
@@ -64,10 +64,10 @@ export function CirclesRedeemPanel({ onOpenHist }: CirclesRedeemPanelProps) {
 
         {isConnected && (
           <p className="mt-4 text-xs text-[var(--text-muted)]">
-            Groupe HIST :{" "}
+            HIST group:{" "}
             {trustsHistGroup
-              ? "vous approuvez le groupe — échanges on-chain possibles."
-              : "approuvez le groupe History Guessr dans Circles pour recevoir du HIST."}
+              ? "you support the group — on-chain transfers available."
+              : "support the History Guessr group in Circles to receive HIST."}
           </p>
         )}
       </div>

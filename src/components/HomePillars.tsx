@@ -14,7 +14,7 @@ const pillars = [
   {
     title: "Circles & HIST",
     description:
-      "Défiez des amis de confiance, partagez des quiz de cercle, puis échangez le HIST gagné en CRC.",
+      "Challenge trusted friends, share circle quizzes, then redeem earned HIST for CRC.",
     icon: "◎",
   },
 ];

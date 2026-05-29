@@ -45,7 +45,7 @@ export function CirclesHubScreen({
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div>
             <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--map-green)]">
-              Protocole Circles
+              Circles protocol
             </p>
             <h1 className="mt-2 font-display text-3xl font-semibold text-[var(--text-primary)]">
               {circlesHubContent.title}

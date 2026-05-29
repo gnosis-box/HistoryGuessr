@@ -112,17 +112,17 @@ try {
   if (duplicates.length > 0) {
     console.log("—".repeat(60));
     console.log(
-      "⚠️  Les groupes on-chain ne se suppriment pas dans Circles.",
+      "⚠️  On-chain groups cannot be deleted in Circles.",
     );
     console.log(
-      "   Gardez UN seul dans VITE_HIST_GROUP_ADDRESS (marqué KEEP).",
+      "   Keep ONE address in VITE_HIST_GROUP_ADDRESS (marked KEEP).",
     );
-    console.log("   Pour les autres : ne plus les trust / ne pas les utiliser.");
-    console.log("   Dans l’app Circles : ignorez-les dans votre liste de groupes.");
+    console.log("   For the others: stop trusting them / do not use them.");
+    console.log("   In the Circles app: ignore them in your group list.");
   }
 
   if (!keeper) {
-    console.log("\nSuggestion: choisissez le bon groupe et ajoutez:");
+    console.log("\nSuggestion: pick the right group and add:");
     console.log("  VITE_HIST_GROUP_ADDRESS=0x…");
   }
 } catch (err) {

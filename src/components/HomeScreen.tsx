@@ -68,7 +68,7 @@ export function HomeScreen({ onStartCampaign, onPlayPack }: HomeScreenProps) {
             className="btn-secondary"
             onClick={openCommunities}
           >
-            Espace Circles
+            Circles hub
           </button>
           <a
             href={getCirclesPlaygroundUrl()}

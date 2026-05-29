@@ -63,18 +63,17 @@ export function CommunityCirclesSection({
       {communities.length === 0 ? (
         <div className="rounded-2xl border border-dashed border-[var(--border-subtle)] p-8 text-center">
           <p className="font-display text-lg text-[var(--gold-soft)]">
-            Aucun cercle pour l’instant
+            No circles yet
           </p>
           <p className="mt-2 text-sm text-[var(--text-secondary)]">
-            Créez un cercle ci-dessus, invitez des amis de confiance (onglet
-            « {circlesHubContent.tabs.friends} »), puis publiez votre premier
-            quiz.
+            Create a circle above, invite trusted friends ({circlesHubContent.tabs.friends} tab),
+            then publish your first quiz.
           </p>
         </div>
       ) : (
         <section className="space-y-4">
           <h2 className="text-sm font-semibold uppercase tracking-wider text-[var(--text-muted)]">
-            Vos cercles ({communities.length})
+            Your circles ({communities.length})
           </h2>
           {communities.map((community) => {
             const quizzes = getQuizzesForCommunity(community.id);
@@ -92,13 +91,13 @@ export function CommunityCirclesSection({
                       {community.name}
                     </h3>
                     <p className="mt-1 text-sm text-[var(--text-secondary)]">
-                      {community.description || "Pas de description"}
+                      {community.description || "No description"}
                     </p>
                     <p className="mt-2 text-xs text-[var(--text-muted)]">
                       {community.visibility === "private"
-                        ? "Privé (liste d’invités)"
-                        : "Lien ouvert"}{" "}
-                      · {community.inviteAddresses.length} invité
+                        ? "Private (invite list)"
+                        : "Open link"}{" "}
+                      · {community.inviteAddresses.length} invite
                       {community.inviteAddresses.length === 1 ? "" : "s"} ·{" "}
                       {quizzes.length} quiz
                       {quizzes.length === 1 ? "" : "s"}
@@ -111,7 +110,7 @@ export function CommunityCirclesSection({
                       setExpandedId(isExpanded ? null : community.id)
                     }
                   >
-                    {isExpanded ? "Réduire" : "Gérer"}
+                    {isExpanded ? "Collapse" : "Manage"}
                   </button>
                 </div>
 
@@ -138,15 +137,15 @@ export function CommunityCirclesSection({
                         className="btn-primary text-sm"
                         onClick={() => setCreatingQuizFor(community.id)}
                       >
-                        + Créer un quiz
+                        + Create quiz
                       </button>
                     )}
 
                     {quizzes.length === 0 &&
                       creatingQuizFor !== community.id && (
                         <p className="text-xs text-[var(--text-muted)]">
-                          Ajoutez des questions dans le builder, puis publiez
-                          le quiz et partagez le lien à votre cercle.
+                          Add questions in the builder, then publish the quiz
+                          and share the link with your circle.
                         </p>
                       )}
 
@@ -177,7 +176,7 @@ export function CommunityCirclesSection({
                                   onPlayQuiz(community.id, quiz.id)
                                 }
                               >
-                                Jouer
+                                Play
                               </button>
                               <button
                                 type="button"
@@ -187,8 +186,8 @@ export function CommunityCirclesSection({
                                 }
                               >
                                 {copyStatus === quiz.id
-                                  ? "Lien copié !"
-                                  : "Copier le lien d’invitation"}
+                                  ? "Link copied!"
+                                  : "Copy invite link"}
                               </button>
                             </div>
                           </li>
@@ -199,7 +198,7 @@ export function CommunityCirclesSection({
                     <p className="text-xs text-[var(--text-muted)]">
                       {access.reason}
                       {!isConnected &&
-                        " Connectez Circles pour lier les quiz à votre wallet."}
+                        " Connect Circles to attach quizzes to your wallet."}
                     </p>
                   </div>
                 )}

@@ -45,18 +45,18 @@ export function CreateCommunityForm({
       className="glass-card space-y-4 rounded-2xl p-5"
     >
       <h3 className="font-display text-lg font-semibold text-[var(--text-primary)]">
-        Créer un cercle de confiance
+        Create a trusted circle
       </h3>
       <p className="text-sm text-[var(--text-secondary)]">
-        Invitez des wallets de votre graphe Circles pour des quiz privés.
-        Fondateur :{" "}
+        Invite wallets from your Circles trust graph for private quizzes.
+        Founder:{" "}
         <span className="font-mono text-xs text-[var(--text-muted)]">
           {founderAddress || "guest (connect Circles)"}
         </span>
       </p>
 
       <label className="block text-sm">
-        <span className="text-[var(--text-muted)]">Nom</span>
+        <span className="text-[var(--text-muted)]">Name</span>
         <input
           required
           value={name}
@@ -78,7 +78,7 @@ export function CreateCommunityForm({
       </label>
 
       <fieldset className="text-sm">
-        <legend className="text-[var(--text-muted)]">Visibilité</legend>
+        <legend className="text-[var(--text-muted)]">Visibility</legend>
         <div className="mt-2 flex flex-wrap gap-4">
           <label className="flex items-center gap-2">
             <input
@@ -86,7 +86,7 @@ export function CreateCommunityForm({
               checked={visibility === "private"}
               onChange={() => setVisibility("private")}
             />
-            Privé (liste d’invités + lien)
+            Private (invite list + link)
           </label>
           <label className="flex items-center gap-2">
             <input
@@ -94,14 +94,14 @@ export function CreateCommunityForm({
               checked={visibility === "discoverable"}
               onChange={() => setVisibility("discoverable")}
             />
-            Lien ouvert (toute personne avec l’URL)
+            Open link (anyone with the URL)
           </label>
         </div>
       </fieldset>
 
       <label className="block text-sm">
         <span className="text-[var(--text-muted)]">
-          Wallets invités (0x…, séparés par des virgules)
+          Invite wallets (0x…, comma-separated)
         </span>
         <input
           value={invites}
@@ -112,7 +112,7 @@ export function CreateCommunityForm({
       </label>
 
       <button type="submit" className="btn-primary">
-        Créer le cercle
+        Create circle
       </button>
     </form>
   );
