@@ -2,10 +2,20 @@ import { createPublicClient, createWalletClient, http } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
 import { gnosis } from "viem/chains";
 
+function normalizePrivateKey(raw) {
+  if (!raw) return null;
+  const cleaned = raw.trim().replace(/^["']|["']$/g, "");
+  if (/^0x[a-fA-F0-9]{64}$/.test(cleaned)) return cleaned;
+  if (/^[a-fA-F0-9]{64}$/.test(cleaned)) return `0x${cleaned}`;
+  return null;
+}
+
 export function requirePrivateKey() {
-  const pk = process.env.OPERATOR_PRIVATE_KEY;
-  if (!pk?.startsWith("0x")) {
-    console.error("Missing OPERATOR_PRIVATE_KEY (0x… hex).");
+  const pk = normalizePrivateKey(process.env.OPERATOR_PRIVATE_KEY);
+  if (!pk) {
+    console.error(
+      "Missing OPERATOR_PRIVATE_KEY — set 64 hex chars in .env.local (0x prefix optional).",
+    );
     process.exit(1);
   }
   return pk;
