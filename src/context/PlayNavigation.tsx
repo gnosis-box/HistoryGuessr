@@ -9,6 +9,7 @@ export type AppScreen =
   | "play"
   | "session_complete"
   | "profile"
+  | "hist"
   | "communities";
 
 interface PlayNavigationValue {
@@ -17,7 +18,9 @@ interface PlayNavigationValue {
   activeMode: ChallengeType | null;
   goHome: () => void;
   openProfile: () => void;
+  openHist: () => void;
   openCommunities: () => void;
+  openTrustDuel: () => void;
   openCategory: (groupId: string) => void;
   startMode: (type: ChallengeType) => void;
   startDaily: () => void;

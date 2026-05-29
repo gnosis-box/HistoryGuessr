@@ -1,11 +1,11 @@
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import { useReputation } from "@/hooks/use-reputation";
 import { useCircles } from "@/hooks/use-circles";
 import { historyGuessrGroup } from "@/lib/circles/config";
 import { badgeTierStyles } from "@/utils/accentStyles";
 import { formatHist } from "@/utils/format";
 import { BadgeCollection } from "./BadgeCollection";
-import { CirclesSetupPanel } from "@/components/circles/CirclesSetupPanel";
+import { HistWalletTeaser } from "@/components/hist/HistWalletTeaser";
 import { TrustGraphView } from "@/components/circles/TrustGraphView";
 
 function shortenAddress(addr: string): string {
@@ -29,17 +29,13 @@ export function PlayerProfileScreen() {
   const {
     address,
     isConnected,
-    isMiniappHost,
     ledger,
-    claimRewards,
     profile,
     trustPeers,
     trustsHistGroup,
     isLoadingProfile,
   } = useCircles();
   const { reputation, currentTitle, earnedBadgeList } = useReputation();
-  const [claimMsg, setClaimMsg] = useState<string | null>(null);
-
   const earnedIds = useMemo(
     () => new Set(earnedBadgeList.map((b) => b.id)),
     [earnedBadgeList],
@@ -52,12 +48,6 @@ export function PlayerProfileScreen() {
   const histBalance = formatHist(ledger.pending + ledger.claimed);
   const progress = rankProgress(reputation.prestige);
   const recentRewards = ledger.entries.slice(0, 5);
-
-  async function handleClaim() {
-    const msg = await claimRewards();
-    setClaimMsg(msg);
-    window.setTimeout(() => setClaimMsg(null), 4000);
-  }
 
   return (
     <div className="mx-auto max-w-lg space-y-6 animate-fade-up">
@@ -129,30 +119,7 @@ export function PlayerProfileScreen() {
         isConnected={isConnected}
       />
 
-      <CirclesSetupPanel />
-
-      {ledger.pending > 0 && (
-        <section className="glass-card flex flex-wrap items-center justify-between gap-3 rounded-xl px-4 py-3">
-          <p className="text-sm">
-            <span className="text-[var(--gold-soft)] font-semibold">
-              {formatHist(ledger.pending)} {historyGuessrGroup.symbol}
-            </span>
-            <span className="text-[var(--text-muted)]"> ready to claim</span>
-          </p>
-          {isConnected && isMiniappHost && (
-            <button
-              type="button"
-              className="btn-secondary py-1.5 text-xs"
-              onClick={() => void handleClaim()}
-            >
-              Claim
-            </button>
-          )}
-          {claimMsg && (
-            <p className="w-full text-xs text-[var(--success)]">{claimMsg}</p>
-          )}
-        </section>
-      )}
+      <HistWalletTeaser />
 
       <section className="glass-card rounded-2xl p-5">
         <h2 className="text-sm font-semibold uppercase tracking-wider text-[var(--text-muted)]">

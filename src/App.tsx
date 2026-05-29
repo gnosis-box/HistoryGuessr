@@ -18,8 +18,9 @@ import {
   SessionCompleteScreen,
   type SessionRoundSummary,
 } from "@/components/SessionCompleteScreen";
+import { HistEconomyScreen } from "@/components/hist/HistEconomyScreen";
 import { PlayerProfileScreen } from "@/components/profile/PlayerProfileScreen";
-import { CommunitiesScreen } from "@/components/communities/CommunitiesScreen";
+import { CirclesHubScreen } from "@/components/circles/CirclesHubScreen";
 import { TrustDuelScreen } from "@/components/play/TrustDuelScreen";
 import { CityPicker } from "@/components/play/CityPicker";
 import { canAccessCommunity } from "@/lib/communities/access";
@@ -84,10 +85,20 @@ export default function App() {
     setChallenge(null);
   }, []);
 
+  const openHist = useCallback(() => {
+    setScreen("hist");
+    setChallenge(null);
+  }, []);
+
   const openCommunities = useCallback(() => {
     setScreen("communities");
     setChallenge(null);
     setShareError(null);
+  }, []);
+
+  const openTrustDuel = useCallback(() => {
+    setScreen("trust_duel");
+    setChallenge(null);
   }, []);
 
   const startSession = useCallback(
@@ -260,7 +271,9 @@ export default function App() {
       activeMode,
       goHome,
       openProfile,
+      openHist,
       openCommunities,
+      openTrustDuel,
       openCategory,
       startMode,
       startDaily,
@@ -272,7 +285,9 @@ export default function App() {
       activeMode,
       goHome,
       openProfile,
+      openHist,
       openCommunities,
+      openTrustDuel,
       openCategory,
       challenge?.id,
     ],
@@ -309,8 +324,14 @@ export default function App() {
 
         {screen === "profile" && <PlayerProfileScreen />}
 
+        {screen === "hist" && <HistEconomyScreen />}
+
         {screen === "communities" && (
-          <CommunitiesScreen onPlayQuiz={startCommunityQuiz} />
+          <CirclesHubScreen
+            onPlayQuiz={startCommunityQuiz}
+            onOpenTrustDuel={openTrustDuel}
+            onOpenHist={openHist}
+          />
         )}
 
         {screen === "category" && activeGroupId && (
@@ -342,7 +363,7 @@ export default function App() {
         {screen === "trust_duel" && (
           <TrustDuelScreen
             onStartDuel={startTrustDuel}
-            onBack={() => openCategory("map")}
+            onBack={openCommunities}
           />
         )}
 

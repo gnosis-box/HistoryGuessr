@@ -1,4 +1,5 @@
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
+import { COMMUNITIES_CHANGED_EVENT } from "@/lib/communities/storage";
 import type { Community, CommunityQuiz } from "@/types/community";
 import {
   createCommunityId,
@@ -23,6 +24,12 @@ export function useCommunities() {
     setCommunities(loadCommunities());
     setQuizzes(loadQuizzes());
   }, []);
+
+  useEffect(() => {
+    const handler = () => refresh();
+    window.addEventListener(COMMUNITIES_CHANGED_EVENT, handler);
+    return () => window.removeEventListener(COMMUNITIES_CHANGED_EVENT, handler);
+  }, [refresh]);
 
   const addCommunity = useCallback(
     (input: Omit<Community, "id" | "createdAt">) => {

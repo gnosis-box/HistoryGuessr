@@ -9,9 +9,11 @@ export async function claimPendingHist(
   amount: number,
 ): Promise<{ ok: boolean; message: string }> {
   if (!historyGuessrGroup.groupAddress) {
+    const host =
+      typeof window !== "undefined" ? window.location.host : "this deployment";
     return {
       ok: false,
-      message: `${historyGuessrGroup.symbol} group not deployed yet — rewards stay in your local ledger until VITE_HIST_GROUP_ADDRESS is set.`,
+      message: `${historyGuessrGroup.symbol} group not configured on ${host}. Add VITE_HIST_GROUP_ADDRESS in Vercel env vars or .env.local, then rebuild / redeploy.`,
     };
   }
 

@@ -13,6 +13,7 @@
     "hist:register-group": "node --env-file=.env.local scripts/register-hist-group.mjs",
     "hist:register-group-safe": "node --env-file=.env.local scripts/register-hist-group-safe.mjs",
     "hist:check": "node scripts/check-hist-group.mjs",
+    "hist:list-groups": "node --env-file=.env.local scripts/list-hist-groups.mjs",
     "hist:distribute": "node scripts/distribute-hist-rewards.mjs",
     "test:circles": "node scripts/test-circles-integration.mjs"
   },

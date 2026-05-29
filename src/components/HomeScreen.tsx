@@ -1,7 +1,7 @@
-import { BuilderResourcesPanel } from "./BuilderResourcesPanel";
 import { CampaignsSection } from "./CampaignsSection";
 import { ContentPacksSection } from "./ContentPacksSection";
 import { DailyChallengeCard } from "./DailyChallengeCard";
+import { CirclesHubTeaser } from "./home/CirclesHubTeaser";
 import { HomePillars } from "./HomePillars";
 import { ReputationShowcase } from "./ReputationShowcase";
 import { usePlayNavigation } from "@/context/PlayNavigation";
@@ -14,7 +14,7 @@ interface HomeScreenProps {
 }
 
 export function HomeScreen({ onStartCampaign, onPlayPack }: HomeScreenProps) {
-  const { startDaily, startRandom, openCategory, openCommunities } =
+  const { startDaily, startRandom, openCategory, openCommunities, openHist } =
     usePlayNavigation();
 
   return (
@@ -60,12 +60,15 @@ export function HomeScreen({ onStartCampaign, onPlayPack }: HomeScreenProps) {
           <button type="button" className="btn-secondary" onClick={startDaily}>
             Today&apos;s daily
           </button>
+          <button type="button" className="btn-secondary" onClick={openHist}>
+            HIST economy
+          </button>
           <button
             type="button"
             className="btn-secondary"
             onClick={openCommunities}
           >
-            Trusted circles
+            Espace Circles
           </button>
           <a
             href={getCirclesPlaygroundUrl()}
@@ -97,6 +100,8 @@ export function HomeScreen({ onStartCampaign, onPlayPack }: HomeScreenProps) {
         </div>
       </section>
 
+      <CirclesHubTeaser />
+
       <HomePillars />
 
       <ReputationShowcase />
@@ -118,7 +123,6 @@ export function HomeScreen({ onStartCampaign, onPlayPack }: HomeScreenProps) {
         </div>
       </details>
 
-      <BuilderResourcesPanel />
     </div>
   );
 }

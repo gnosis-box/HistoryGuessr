@@ -12,10 +12,10 @@ const pillars = [
     icon: "🔍",
   },
   {
-    title: "Challenge your circle",
+    title: "Circles & HIST",
     description:
-      "Compare scores with people you trust — not anonymous strangers.",
-    icon: "⚔",
+      "Défiez des amis de confiance, partagez des quiz de cercle, puis échangez le HIST gagné en CRC.",
+    icon: "◎",
   },
 ];
 

@@ -3,6 +3,14 @@ import type { Community, CommunityQuiz } from "@/types/community";
 const COMMUNITIES_KEY = "history-guessr-communities";
 const QUIZZES_KEY = "history-guessr-community-quizzes";
 
+export const COMMUNITIES_CHANGED_EVENT = "history-guessr-communities-changed";
+
+export function notifyCommunitiesChanged(): void {
+  if (typeof window !== "undefined") {
+    window.dispatchEvent(new Event(COMMUNITIES_CHANGED_EVENT));
+  }
+}
+
 function loadJson<T>(key: string, fallback: T): T {
   try {
     const raw = localStorage.getItem(key);
@@ -33,6 +41,7 @@ export function saveCommunity(community: Community): Community[] {
       ? list.map((c, i) => (i === idx ? community : c))
       : [community, ...list];
   saveJson(COMMUNITIES_KEY, next);
+  notifyCommunitiesChanged();
   return next;
 }
 

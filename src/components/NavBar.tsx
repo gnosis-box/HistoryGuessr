@@ -7,6 +7,7 @@ export function NavBar() {
     activeGroupId,
     goHome,
     openProfile,
+    openHist,
     openCommunities,
     openCategory,
     startDaily,
@@ -43,6 +44,28 @@ export function NavBar() {
             </button>
             <button
               type="button"
+              onClick={openCommunities}
+              className={`mr-1 shrink-0 rounded-full px-3 py-2 text-sm font-medium ${
+                screen === "communities" || screen === "trust_duel"
+                  ? "bg-[var(--bg-card)] text-[var(--map-green)]"
+                  : "text-[var(--text-muted)] hover:text-[var(--text-primary)]"
+              }`}
+            >
+              Circles
+            </button>
+            <button
+              type="button"
+              onClick={openHist}
+              className={`mr-1 shrink-0 rounded-full px-3 py-2 text-sm font-medium ${
+                screen === "hist"
+                  ? "bg-[var(--gold)]/20 text-[var(--gold-soft)]"
+                  : "text-[var(--text-muted)] hover:text-[var(--text-primary)]"
+              }`}
+            >
+              HIST
+            </button>
+            <button
+              type="button"
               onClick={openProfile}
               className={`mr-1 shrink-0 rounded-full px-3 py-2 text-sm font-medium ${
                 screen === "profile"
@@ -51,17 +74,6 @@ export function NavBar() {
               }`}
             >
               Profile
-            </button>
-            <button
-              type="button"
-              onClick={openCommunities}
-              className={`mr-1 shrink-0 rounded-full px-3 py-2 text-sm font-medium ${
-                screen === "communities"
-                  ? "bg-[var(--bg-card)] text-[var(--map-green)]"
-                  : "text-[var(--text-muted)] hover:text-[var(--text-primary)]"
-              }`}
-            >
-              Circles
             </button>
 
             {playModeGroups.map((group) => (
